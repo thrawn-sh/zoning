@@ -49,8 +49,13 @@ def calculate_neighbours(kml):
         points = neighbours[current]
         for neighbour in neighbours:
             neighbour_points = neighbours[neighbour]
-            if (current != neighbour) and not points.isdisjoint(neighbour_points):
-                result[current] &= neighbour
+            if not points.isdisjoint(neighbour_points):
+                neighbour_set = set()
+                if current in result:
+                    neighbour_set = result[current]
+
+                neighbour_set.add(neighbour)
+                result[current] = neighbour_set
 
     return result
 
@@ -139,8 +144,10 @@ def main():
             population[postal_code] = row['einwohner']
 
     kml_document = html.fromstring(kml)
-    kmz_to_json(kml_document, city, state, population, args.output)
+    neighbours = calculate_neighbours(kml_document)
     kmz_to_geojson(kml_document, args.output)
+    kmz_to_json(kml_document, city, state, population, args.output)
+#    kmz_to_neighbors(kml_document, neighbours);
 
 if __name__ == '__main__':
     main() 
