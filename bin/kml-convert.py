@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from lxml    import html
-from zipfile import ZipFile
+import argparse
 import collections
+import csv
 import json
+from lxml import html
 import os
+import zipfile
 
 def calculate_center(points):
     max_lat = -1000
@@ -98,15 +100,21 @@ def kmz_to_json(kml, output_folder='api'):
             json.dump(element, outfile, indent=4)
 
 def main():
-    kmz_name = 'plz-gebiete.kmz'
-    kml_name = kmz_name.replace('kmz', 'kml')
+    parser = argparse.ArgumentParser(description="generate api data", add_help=True)
+    parser.add_argument("-a", "--area",       help="area CSV",       required=True, default='area.csv'      )
+    parser.add_argument("-o", "--output",     help="output folder",  required=True, default='./api'         )
+    parser.add_argument("-p", "--population", help="population CSV", required=True, default='population.csv')
+    parser.add_argument("-z", "--zone",       help="zone KMZ",       required=True, default='zone.kmz'      )
 
-    kmz = ZipFile(kmz_name, 'r')
+    args = parser.parse_args()
+
+    kmz = zipfile.ZipFile(args.zone, 'r')
+    kml_name = os.path.basename(args.zone).replace('kmz', 'kml')
     kml = kmz.open(kml_name, 'r').read()
 
     kml_document = html.fromstring(kml)
-    kmz_to_geojson(kml_document)
-    kmz_to_json(kml_document)
+    kmz_to_geojson(kml_document, args.output)
+    kmz_to_json(kml_document, args.output)
 
 if __name__ == '__main__':
     main() 
