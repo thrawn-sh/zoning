@@ -30,14 +30,29 @@ def calculate_center(points):
 
     return ((max_lat + min_lat) / 2, (max_lng + min_lng) / 2)
 
-def calculate_neighbours(current, neighbours):
-    result = set()
-    points = neighbours[current]
-    for neighbour in neighbours:
-        neighbour_points = neighbours[neighbour]
-        if (current != neighbour) and not points.isdisjoint(neighbour_points):
-            result.add(neighbour)
-    return list(result)
+def calculate_neighbours(kml):
+    neighbours = { }
+
+    for pm in kml.cssselect('Placemark'):
+        postal_code = pm.cssselect('name')[0].text_content()
+
+        points = set()
+        for c in pm.cssselect('coordinates')[0].text_content().split(' '):
+            (x, y) = c.split(',')
+            points.add((float(x), float(y)))
+
+        neighbours[postal_code] = points
+
+    result = { }
+    for pm in kml.cssselect('Placemark'):
+        current = pm.cssselect('name')[0].text_content()
+        points = neighbours[current]
+        for neighbour in neighbours:
+            neighbour_points = neighbours[neighbour]
+            if (current != neighbour) and not points.isdisjoint(neighbour_points):
+                result[current] &= neighbour
+
+    return result
 
 def kmz_to_geojson(kml, output_folder='api'):
     os.makedirs(output_folder, exist_ok=True)
@@ -57,9 +72,9 @@ def kmz_to_geojson(kml, output_folder='api'):
         feature['geometry']['coordinates'] = [ coordinates ]
 
         with open(output_folder + '/' + postal_code + '.geojson', 'w') as outfile:
-            json.dump(feature, outfile, indent=4)
+            json.dump(feature, outfile, indent=4, ensure_ascii=False)
 
-def kmz_to_json(kml, output_folder='api'):
+def kmz_to_json(kml, city_dictionary, state_dictionary, population_dictionary, output_folder='api'):
     coordinates = { }
 
     for pm in kml.cssselect('Placemark'):
@@ -80,24 +95,19 @@ def kmz_to_json(kml, output_folder='api'):
         center = calculate_center(points)
         # external data
         license_partner = None
-        neighbours = calculate_neighbours(postal_code, coordinates)
-        # replace with cvs
-        place = pm.cssselect('description')[0].text_content()
-        # replace with cvs
-        population = 0
-        # replace with cvs
-        state = ''
+        place = city_dictionary[postal_code]
+        population = population_dictionary[postal_code]
+        state = state_dictionary[postal_code]
 
         element = collections.OrderedDict()
         element['center']           = center
         element['license_partner']  = license_partner
-        element['neighbours']       = neighbours
         element['place']            = place
         element['population']       = population
         element['state']            = state
 
         with open(output_folder + '/' + postal_code + '.json', 'w') as outfile:
-            json.dump(element, outfile, indent=4)
+            json.dump(element, outfile, indent=4, ensure_ascii=False)
 
 def main():
     parser = argparse.ArgumentParser(description="generate api data", add_help=True)
@@ -112,9 +122,25 @@ def main():
     kml_name = os.path.basename(args.zone).replace('kmz', 'kml')
     kml = kmz.open(kml_name, 'r').read()
 
+    city  = { }
+    state = { }
+    with open(args.area) as f:
+        dictionary = csv.DictReader(f, delimiter=',')
+        for row in dictionary:
+            postal_code = row['plz']
+            city[postal_code]  = row['ort']
+            state[postal_code] = row['bundesland']
+        
+    population = { }
+    with open(args.population) as f:
+        dictionary = csv.DictReader(f, delimiter=',')
+        for row in dictionary:
+            postal_code = row['plz']
+            population[postal_code] = row['einwohner']
+
     kml_document = html.fromstring(kml)
+    kmz_to_json(kml_document, city, state, population, args.output)
     kmz_to_geojson(kml_document, args.output)
-    kmz_to_json(kml_document, args.output)
 
 if __name__ == '__main__':
     main() 
