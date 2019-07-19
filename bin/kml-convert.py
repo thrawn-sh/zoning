@@ -60,7 +60,8 @@ def calculate_neighbours(kml):
     return result
 
 def kmz_to_geojson(kml, output_folder='api'):
-    os.makedirs(output_folder, exist_ok=True)
+    folder = output_folder + '/geo'
+    os.makedirs(folder, exist_ok=True)
     for pm in kml.cssselect('Placemark'):
         postal_code = pm.cssselect('name')[0].text_content()
 
@@ -76,7 +77,7 @@ def kmz_to_geojson(kml, output_folder='api'):
         feature['geometry']['type']        = 'Polygon'
         feature['geometry']['coordinates'] = [ coordinates ]
 
-        with open(output_folder + '/' + postal_code + '.geojson', 'w') as outfile:
+        with open(folder + '/' + postal_code + '.geojson', 'w') as outfile:
             json.dump(feature, outfile, indent=4, ensure_ascii=False)
 
 def kmz_to_json(kml, city_dictionary, state_dictionary, population_dictionary, management_dictionary, output_folder='api'):
@@ -115,11 +116,14 @@ def kmz_to_json(kml, city_dictionary, state_dictionary, population_dictionary, m
 
 def main():
     parser = argparse.ArgumentParser(description="generate api data", add_help=True)
-    parser.add_argument("-a", "--area",       help="area CSV",       required=True, default='area.csv'      )
-    parser.add_argument("-m", "--management", help="management CSV", required=True, default='management.csv')
-    parser.add_argument("-o", "--output",     help="output folder",  required=True, default='api'           )
-    parser.add_argument("-p", "--population", help="population CSV", required=True, default='population.csv')
-    parser.add_argument("-z", "--zone",       help="zone KMZ",       required=True, default='zone.kmz'      )
+    parser.add_argument("-a", "--area",       help="area CSV",         required=True, default='area.csv'                          )
+    parser.add_argument("-g", "--geojson",    help="generate geojson",                                        action="store_true" )
+    parser.add_argument("-j", "--json",       help="generate json",                                           action="store_true" )
+    parser.add_argument("-m", "--management", help="management CSV",   required=True, default='management.csv'                    )
+    parser.add_argument("-n", "--neighbor",   help="generate neighbour information",                          action="store_true" )
+    parser.add_argument("-o", "--output",     help="output folder",    required=True, default='api'                               )
+    parser.add_argument("-p", "--population", help="population CSV",   required=True, default='population.csv'                    )
+    parser.add_argument("-z", "--zone",       help="zone KMZ",         required=True, default='zone.kmz'                          )
 
     args = parser.parse_args()
 
@@ -151,10 +155,13 @@ def main():
             management[postal_code] = row['management']
 
     kml_document = html.fromstring(kml)
-    kmz_to_geojson(kml_document, args.output)
-    kmz_to_json(kml_document, city, state, population, management, args.output)
-    #neighbours = calculate_neighbours(kml_document)
-#    kmz_to_neighbors(kml_document, neighbours);
+    if args.geojson:
+        kmz_to_geojson(kml_document, args.output)
+    if args.json:
+        kmz_to_json(kml_document, city, state, population, management, args.output)
+    if args.neighbour:
+        neighbours = calculate_neighbours(kml_document)
+        kmz_to_neighbors(kml_document, neighbours);
 
 if __name__ == '__main__':
     main() 
