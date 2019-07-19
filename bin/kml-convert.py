@@ -30,6 +30,9 @@ def calculate_center(points):
 
     return ((max_lat + min_lat) / 2, (max_lng + min_lng) / 2)
 
+def sortFeature(feature):
+    return feature['properties']['name']
+
 def calculate_features(kml):
     features = { }
     for pm in kml.cssselect('Placemark'):
@@ -98,7 +101,7 @@ def kml_to_neighbours(features, neighbour_dictionary, depth, output_folder='api'
     folder = output_folder + '/neighbour/' + str(depth)
     os.makedirs(folder, exist_ok=True)
     for feature in features:
-        neighbours = set(neighbour_dictionary[feature])
+        neighbours = neighbour_dictionary[feature]
         for i in range(1, depth):
             for neighbour in neighbours:
                 neighbours = neighbours | neighbour_dictionary[neighbour]
@@ -106,10 +109,10 @@ def kml_to_neighbours(features, neighbour_dictionary, depth, output_folder='api'
         listing = []
         for neighbour in neighbours:
             listing.append(features[neighbour])
+        listing.sort(key = sortFeature)
 
         collection = collections.OrderedDict()
         collection['type']       = 'FeatureCollection'
-        collection['properties'] = { 'name': feature }
         collection['featues']    = listing
 
         with open(folder + '/' + feature + '.geojson', 'w') as outfile:
@@ -160,7 +163,7 @@ def main():
         dictionary = csv.DictReader(f, delimiter=',')
         for row in dictionary:
             postal_code = row['plz']
-            neighbours[postal_code] = row['neighbours'].split(' ')
+            neighbours[postal_code] = set(row['neighbours'].split(' '))
 
     kml_document = html.fromstring(kml)
     if args.geojson:
