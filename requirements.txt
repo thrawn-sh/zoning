@@ -1,5 +1,6 @@
 wheel
 setuptools
 
-lxml==4.3.4
 cssselect==1.0.3
+lxml==4.3.4
+shapely==1.6.4.post2
