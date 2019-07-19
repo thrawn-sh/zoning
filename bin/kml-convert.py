@@ -139,7 +139,7 @@ def main():
             postal_code = row['plz']
             city[postal_code]  = row['ort']
             state[postal_code] = row['bundesland']
-        
+
     population = { }
     with open(args.population) as f:
         dictionary = csv.DictReader(f, delimiter=',')
@@ -164,4 +164,4 @@ def main():
         kmz_to_neighbors(kml_document, neighbours);
 
 if __name__ == '__main__':
-    main() 
+    main()

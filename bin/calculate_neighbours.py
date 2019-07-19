@@ -16,9 +16,10 @@ def calculate_neighbours(kml):
         postal_code = pm.cssselect('name')[0].text_content()
 
         points = []
-        for c in pm.cssselect('coordinates')[0].text_content().split(' '):
-            (x, y) = c.split(',')
-            points.append((float(x), float(y)))
+        for c in pm.cssselect('coordinates'):
+            for p in c.text_content().split(' '):
+                (x, y) = p.split(',')
+                points.append((float(x), float(y)))
 
         bounds = Polygon(points).bounds
         neighbours[postal_code] = box(bounds[0], bounds[1], bounds[2], bounds[3])
