@@ -33,22 +33,26 @@ def calculate_center(points):
 def sortFeature(feature):
     return feature['properties']['name']
 
+
 def calculate_features(kml):
     features = { }
     for pm in kml.cssselect('Placemark'):
         postal_code = pm.cssselect('name')[0].text_content()
 
         coordinates = []
-        for c in pm.cssselect('coordinates')[0].text_content().split(' '):
-            (x, y) = c.split(',')
-            coordinates.append([ float(x), float(y) ])
+        for c in pm.cssselect('coordinates'):
+            points = []
+            for p in c.text_content().split(' '):
+                (x, y) = p.split(',')
+                points.append((float(x), float(y)))
+            coordinates.append(points)
 
         feature = collections.OrderedDict()
         feature['type']                    = 'Feature'
         feature['properties']              = { 'name': postal_code }
         feature['geometry']                = collections.OrderedDict()
         feature['geometry']['type']        = 'Polygon'
-        feature['geometry']['coordinates'] = [ coordinates ]
+        feature['geometry']['coordinates'] = coordinates
 
         features[postal_code] = feature
 
