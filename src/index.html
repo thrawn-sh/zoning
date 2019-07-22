@@ -10,59 +10,13 @@
         <link rel="stylesheet" href="stylesheet.min.css" />
     </head>
     <body>
-        <input id="search" type="text"></input>
-        <input type="button" value="Go" onclick="gotoPostalCode()"></input>
-        <div id="map" style="height: 800px; width: 800px;"></div>
-        <table>
-            <tr>
-                <td></td>
-                <td></td>
-                <td>lat:</td>
-                <td><input id="north_lat" type="text" readonly></input></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td>lng:</td>
-                <td><input id="north_lng" type="text" readonly></input></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>lat:</td>
-                <td><input id="west_lat" type="text" readonly></input></td>
-                <td>lat:</td>
-                <td><input id="center_lat" type="text" readonly></input></td>
-                <td>lat:</td>
-                <td><input id="east_lat" type="text" readonly></input></td>
-            </tr>
-            <tr>
-                <td>lng:</td>
-                <td><input id="west_lng" type="text" readonly></input></td>
-                <td>lng:</td>
-                <td><input id="center_lng" type="text" readonly></input></td>
-                <td>lng:</td>
-                <td><input id="east_lng" type="text" readonly></input></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td>lat:</td>
-                <td><input id="south_lat" type="text" readonly></input></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td>lng:</td>
-                <td><input id="south_lng" type="text" readonly></input></td>
-                <td></td>
-                <td></td>
-            </tr>
-        </table>
+        <header>
+            <input id="search" type="text" onfocusout="gotoPostalCode()"></input>
+            <input type="button" value="Go" onclick="gotoPostalCode()"></input>
+        </header>
+        <main>
+            <div id="map" style="height: 800px; width: 800px;"></div>
+        </main>
         <script async defer src="script.min.js"></script>
     </body>
 </html>
