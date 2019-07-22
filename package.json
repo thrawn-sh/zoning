@@ -15,7 +15,7 @@
         "gulp-flatten": "0.4.0",
         "gulp-gzip": "1.4.2",
         "gulp-htmlmin": "5.0.1",
-        "gulp-if": "2.0.2",
+        "gulp-if": "3.0.0",
         "gulp-imagemin": "6.0.0",
         "gulp-jshint": "2.1.0",
         "gulp-jsonminify": "1.1.0",
@@ -36,7 +36,6 @@
     "scripts": {
         "build": "gulp build",
         "clean": "gulp clean",
-        "preupdate-bower": "npm install",
         "preupdate-npm": "npm install",
         "update-npm": "npm-check-updates --upgrade",
         "prerelease": "npm install",
