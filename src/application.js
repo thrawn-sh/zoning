@@ -29,14 +29,13 @@ function onEachFeature(feature, layer) {
             return;
         }
         document.getElementById("search").value = plz;
-        gotoPostalCode();
+        gotoPostalCode(false);
     });
 }
 
-function removeZone(code) {
-    var row = document.getElementById("pc_" + code);
+function removeZone(row) {
     if (row) {
-        var cell = row.childNodes[1];
+        var cell = row.childNodes[2];
         var sumCell = document.getElementById("sum");
         if (sumCell) {
             var sum = parseInt(sumCell.innerText);
@@ -51,10 +50,9 @@ function addCurrentZone() {
     var table = document.getElementById("selection");
     if (table) {
         var row = table.insertRow(-1);
-        row.id = "pc_" + currentPostalcode;
-
-        row.insertCell(0).innerText = currentPostalcode;
-        var populationCell = row.insertCell(1);
+        row.insertCell(0).innerText = currentZone.place;
+        row.insertCell(1).innerText = currentPostalcode;
+        var populationCell = row.insertCell(2);
         populationCell.innerText = currentZone.population;
         populationCell.classList.add("right");
 
@@ -62,9 +60,9 @@ function addCurrentZone() {
         button.type = "button";
         button.value = "delete";
         button.addEventListener('click', function() {
-                removeZone(currentPostalcode);
+                removeZone(row);
         }, false);
-        row.insertCell(2).appendChild(button);
+        row.insertCell(3).appendChild(button);
     }
 
     var sumCell = document.getElementById("sum");
@@ -75,11 +73,11 @@ function addCurrentZone() {
     }
 }
 
-function gotoPostalCode() {
+function gotoPostalCode(fly) {
     var postalCode = document.getElementById("search").value.trim();
     if (((!postalCode || 0 === postalCode.length)) || (currentPostalcode === postalCode)) {
-        var center = new L.LatLng(currentZone.center[1], currentZone.center[0]);
-        map.flyTo(center);
+        var currentCenter = new L.LatLng(currentZone.center[1], currentZone.center[0]);
+        map.flyTo(currentCenter);
         return;
     }
     currentPostalcode = postalCode;
@@ -104,10 +102,8 @@ function gotoPostalCode() {
     }
 
     var center = new L.LatLng(currentZone.center[1], currentZone.center[0]);
-    if (true) {
+    if (fly) {
         map.flyTo(center, (maxZoom - 1));
-    } else {
-        map.flyTo(center);
     }
 
     if (plzLayer) {
