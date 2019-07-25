@@ -11,20 +11,21 @@ var map = L.map("map", {
     zoom:    minZoom,
 });
 
-var osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+var osmLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     "attribution":  "&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors",
     "useCache": true
 });
-map.addLayer(osm);
+map.addLayer(osmLayer);
 
 
-var plz = undefined;
-var current = undefined;
+var plzLayer = undefined;
+var currentPostalcode = undefined;
+var currentZone = undefined;
 
 function onEachFeature(feature, layer) {
     layer.on('click', function() {
         var plz = feature.properties.name;
-        if (plz === current) {
+        if (plz === currentPostalcode) {
             return;
         }
         document.getElementById("search").value = plz;
@@ -32,30 +33,59 @@ function onEachFeature(feature, layer) {
     });
 }
 
-var center = undefined;
+function addCurrentZone() {
+    var table = document.getElementById("selection");
+    if (table) {
+        var row = table.insertRow(-1);
+        row.insertCell(0).innerHTML = currentPostalcode;
+        row.insertCell(1).innerHTML = currentZone.population;
+    }
+
+    var sumCell = document.getElementById("sum");
+    if (sumCell) {
+        var sum = parseInt(sumCell.innerHTML) + currentZone.population
+        sumCell.innerHTML = sum;
+    }
+}
+
 function gotoPostalCode() {
     var postalCode = document.getElementById("search").value.trim();
-    if (((!postalCode || 0 === postalCode.length)) || (current === postalCode)) {
+    if (((!postalCode || 0 === postalCode.length)) || (currentPostalcode === postalCode)) {
+        var center = new L.LatLng(currentZone.center[1], currentZone.center[0]);
         map.flyTo(center);
         return
     }
-    current = postalCode;
+    currentPostalcode = postalCode;
 
     var request = new XMLHttpRequest(); // a new request
     request.open("GET", "/api/" + postalCode + ".json", false);
     request.send(null);
-    var response = JSON.parse(request.responseText);
+    currentZone = JSON.parse(request.responseText);
 
-    center = new L.LatLng(response.center[1], response.center[0]);
+    document.getElementById("place").value = currentZone.place;
+    document.getElementById("state").value = currentZone.state;
+    document.getElementById("population").value = currentZone.population;
+    var manager = currentZone.manager;
+    document.getElementById("manager").value = manager;
+    var button = document.getElementById("add");
+    if (button) {
+        if (manager) {
+            button.disabled = true;
+        } else {
+            button.disabled = false;
+        }
+    }
+
+    var center = new L.LatLng(currentZone.center[1], currentZone.center[0]);
     if (true) {
         map.flyTo(center, (maxZoom - 1));
     } else {
         map.flyTo(center);
     }
 
-    if (plz) {
-        map.removeLayer(plz);
-        plz = undefined;
+    if (plzLayer) {
+        map.removeLayer(plzLayer);
+        plzLayer = undefined;
     }
 
     var requestGeo = new XMLHttpRequest(); // a new request
@@ -63,7 +93,7 @@ function gotoPostalCode() {
     requestGeo.send(null);
     var responseGeo = JSON.parse(requestGeo.responseText);
 
-    plz = L.geoJSON(responseGeo, {
+    plzLayer = L.geoJSON(responseGeo, {
         style: function(feature) {
             var request = new XMLHttpRequest(); // a new request
             var plz = feature.properties.name;
@@ -77,8 +107,8 @@ function gotoPostalCode() {
         },
         onEachFeature: onEachFeature
     });
-    plz.bindTooltip(function(layer) {
+    plzLayer.bindTooltip(function(layer) {
         return layer.feature.properties.name;
     }, { sticky: true });
-    map.addLayer(plz);
+    map.addLayer(plzLayer);
 }

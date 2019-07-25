@@ -1,13 +1,52 @@
-#map path {
-    cursor: pointer;
-    stroke-width: 1;
+#map {
+    path {
+        cursor: pointer;
+        stroke-width: 1;
+
+        &:hover {
+            fill-opacity: 0.8;
+        }
+    }
+
+    display: flex;
+    flex-grow: 1;
+    height: 800px;
+    min-width: 600px;
 }
 
-#map path:hover {
-    fill-opacity: 0.8;
+#menu {
+    display: flex;
+    flex-grow: 1;
+    min-width: 600px;
+    flex-direction: column;
+
+    .label {
+        text-align: right;
+    }
+
+    tfoot {
+        font-weight: bold;
+    }
+}
+
+
+body {
+    display: flex;
+    flex-direction: column;
+    font-family: sans-serif;
 }
 
 header {
-    height: 4em;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 0.5em;
     text-align: center;
+}
+
+main {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 0.5em;
 }

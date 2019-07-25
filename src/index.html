@@ -15,7 +15,59 @@
             <input type="button" value="Go" onclick="gotoPostalCode()"></input>
         </header>
         <main>
-            <div id="map" style="height: 800px; width: 800px;"></div>
+            <div id="map"></div>
+            <div id="menu">
+                <h2>Current Zone</h2>
+                <table>
+                    <tr>
+                        <td class="label">City / Community:</td>
+                        <td>
+                            <input id="place" type="text" readonly></input>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">State:</td>
+                        <td>
+                            <input id="state" type="text" readonly></input>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Population:</td>
+                        <td>
+                            <input id="population" type="text" readonly></input>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Manager:</td>
+                        <td>
+                            <input id="manager" type="text" readonly></input>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label" colspan="2">
+                            <input id="add" type="button" value="Add current zone" onclick="addCurrentZone()"></input>
+                        </td>
+                    </tr>
+                </table>
+                <h2>Selected Zones</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Postcode</th>
+                            <th>Population</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="selection"></tbody>
+                    <tfoot>
+                        <tr>
+                            <td></td>
+                            <td id="sum">0</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
         </main>
         <script async defer src="script.min.js"></script>
     </body>
