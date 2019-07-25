@@ -37,14 +37,15 @@ function addCurrentZone() {
     var table = document.getElementById("selection");
     if (table) {
         var row = table.insertRow(-1);
-        row.insertCell(0).innerHTML = currentPostalcode;
-        row.insertCell(1).innerHTML = currentZone.population;
+        row.insertCell(0).innerText = currentPostalcode;
+        row.insertCell(1).innerText = currentZone.population;
     }
 
     var sumCell = document.getElementById("sum");
     if (sumCell) {
-        var sum = parseInt(sumCell.innerHTML) + currentZone.population;
-        sumCell.innerHTML = sum;
+        var sum = parseInt(sumCell.innerText);
+        sum += parseInt(currentZone.population);
+        sumCell.innerText = sum;
     }
 }
 
