@@ -117,7 +117,7 @@ def kml_to_neighbours(features, neighbour_dictionary, depth, output_folder='api'
 
         collection = collections.OrderedDict()
         collection['type']       = 'FeatureCollection'
-        collection['featues']    = listing
+        collection['features']   = listing
 
         with open(folder + '/' + feature + '.geojson', 'w') as outfile:
             json.dump(collection, outfile, indent=4, ensure_ascii=False)
