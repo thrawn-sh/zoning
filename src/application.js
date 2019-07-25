@@ -43,7 +43,7 @@ function addCurrentZone() {
 
     var sumCell = document.getElementById("sum");
     if (sumCell) {
-        var sum = parseInt(sumCell.innerHTML) + currentZone.population
+        var sum = parseInt(sumCell.innerHTML) + currentZone.population;
         sumCell.innerHTML = sum;
     }
 }
@@ -53,7 +53,7 @@ function gotoPostalCode() {
     if (((!postalCode || 0 === postalCode.length)) || (currentPostalcode === postalCode)) {
         var center = new L.LatLng(currentZone.center[1], currentZone.center[0]);
         map.flyTo(center);
-        return
+        return;
     }
     currentPostalcode = postalCode;
 
