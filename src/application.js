@@ -33,12 +33,38 @@ function onEachFeature(feature, layer) {
     });
 }
 
+function removeZone(code) {
+    var row = document.getElementById("pc_" + code);
+    if (row) {
+        var cell = row.childNodes[1];
+        var sumCell = document.getElementById("sum");
+        if (sumCell) {
+            var sum = parseInt(sumCell.innerText);
+            sum -= parseInt(cell.innerText);
+            sumCell.innerText = sum;
+        }
+        row.parentNode.removeChild(row);
+    }
+}
+
 function addCurrentZone() {
     var table = document.getElementById("selection");
     if (table) {
         var row = table.insertRow(-1);
+        row.id = "pc_" + currentPostalcode;
+
         row.insertCell(0).innerText = currentPostalcode;
-        row.insertCell(1).innerText = currentZone.population;
+        var populationCell = row.insertCell(1);
+        populationCell.innerText = currentZone.population;
+        populationCell.classList.add("right");
+
+        var button = document.createElement("input");
+        button.type = "button";
+        button.value = "delete";
+        button.addEventListener('click', function() {
+                removeZone(currentPostalcode);
+        }, false);
+        row.insertCell(2).appendChild(button);
     }
 
     var sumCell = document.getElementById("sum");

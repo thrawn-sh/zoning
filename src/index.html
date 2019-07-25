@@ -3,70 +3,75 @@
     <head>
         <meta charset="utf-8" />
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <meta name="description"        content="Betreuungswelt Zoning" />
+        <meta name="description"        content="Zoningi Application" />
         <meta name="viewport"           content="width=device-width, initial-scale=1" />
 
-        <title>Betreuungswelt Zoning</title>
+        <title>Zoning</title>
         <link rel="stylesheet" href="stylesheet.min.css" />
     </head>
     <body>
-        <header>
-            <input id="search" type="text" onfocusout="gotoPostalCode()"></input>
-            <input type="button" value="Go" onclick="gotoPostalCode()"></input>
-        </header>
         <main>
             <div id="map"></div>
             <div id="menu">
+                <h2>Search</h2>
+                <div>
+                    <input id="search" placeholder="enter postal code" type="text" onfocusout="gotoPostalCode()"></input>
+                    <input type="button" value="Go" onclick="gotoPostalCode()"></input>
+                </div>
                 <h2>Current Zone</h2>
-                <table>
-                    <tr>
-                        <td class="label">City / Community:</td>
-                        <td>
-                            <input id="place" type="text" readonly></input>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="label">State:</td>
-                        <td>
-                            <input id="state" type="text" readonly></input>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="label">Population:</td>
-                        <td>
-                            <input id="population" type="text" readonly></input>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="label">Manager:</td>
-                        <td>
-                            <input id="manager" type="text" readonly></input>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="label" colspan="2">
-                            <input id="add" type="button" value="Add current zone" onclick="addCurrentZone()"></input>
-                        </td>
-                    </tr>
-                </table>
+                <div>
+                    <table>
+                        <tr>
+                            <td class="label">City / Community:</td>
+                            <td>
+                                <input id="place" type="text" disabled readonly></input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="label">State:</td>
+                            <td>
+                                <input id="state" type="text" disabled readonly></input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="label">Population:</td>
+                            <td>
+                                <input id="population" type="text" disabled readonly></input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="label">Manager:</td>
+                            <td>
+                                <input id="manager" type="text" disabled readonly></input>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="label" colspan="2">
+                                <input id="add" type="button" value="Add current zone" onclick="addCurrentZone()"></input>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
                 <h2>Selected Zones</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Postcode</th>
-                            <th>Population</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody id="selection"></tbody>
-                    <tfoot>
-                        <tr>
-                            <td></td>
-                            <td id="sum">0</td>
-                            <td></td>
-                        </tr>
-                    </tfoot>
-                </table>
+                <div>
+                    <table class="bounded">
+                        <thead>
+                            <tr>
+                                <th>Postcode</th>
+                                <th>Population</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="selection"></tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td id="sum" class="right">0</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
             </div>
         </main>
         <script async defer src="script.min.js"></script>

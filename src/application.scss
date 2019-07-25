@@ -8,10 +8,11 @@
         }
     }
 
+    padding: 1em;
     display: flex;
     flex-grow: 1;
-    height: 800px;
     min-width: 600px;
+    height: 800px;
 }
 
 #menu {
@@ -19,16 +20,44 @@
     flex-grow: 1;
     min-width: 600px;
     flex-direction: column;
+    padding: 1em;
 
     .label {
         text-align: right;
     }
 
-    tfoot {
-        font-weight: bold;
+    table {
+
+        &.bounded {
+            th {
+                border-bottom: 1px solid #000;
+            }
+
+            td {
+                border-top: 1px solid #000;
+            }
+        }
+
+        td {
+            width: 10em;
+        }
+
+        tfoot {
+            font-weight: bold;
+        }
+
+        border-collapse: collapse;
+        vertical-align: middle;
     }
 }
 
+input {
+    margin: 0.25em;
+}
+
+#sum {
+    border-bottom: 3px double #000;
+}
 
 body {
     display: flex;
@@ -36,17 +65,14 @@ body {
     font-family: sans-serif;
 }
 
-header {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    padding: 0.5em;
-    text-align: center;
-}
-
 main {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     padding: 0.5em;
+}
+
+
+.right {
+    text-align: right;
 }
