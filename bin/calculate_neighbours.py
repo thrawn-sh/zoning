@@ -7,7 +7,6 @@ from lxml import html
 import os
 import zipfile
 from shapely.geometry import Polygon
-from shapely.geometry import box
 
 def calculate_neighbours(kml):
     neighbours = { }
@@ -21,8 +20,7 @@ def calculate_neighbours(kml):
                 (x, y) = p.split(',')
                 points.append((float(x), float(y)))
 
-        bounds = Polygon(points).bounds
-        neighbours[postal_code] = box(bounds[0], bounds[1], bounds[2], bounds[3])
+        neighbours[postal_code] = Polygon(points).envelope
 
     result = { }
     size = len(neighbours)
@@ -62,7 +60,7 @@ def main():
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         writer.writeheader()
-        for current in neighbours:
+        for current in sorted(neighbours):
             neighbour = list(neighbours[current])
             neighbour.sort()
             writer.writerow({ 'plz': current, 'neighbours': ' '.join(neighbour) })
