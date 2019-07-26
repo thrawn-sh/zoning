@@ -17,8 +17,8 @@ def calculate_neighbours(kml):
         points = []
         for c in pm.cssselect('coordinates'):
             for p in c.text_content().split(' '):
-                (x, y) = p.split(',')
-                points.append((float(x), float(y)))
+                (lng, lat) = p.split(',')
+                points.append((float(lng), float(lat)))
 
         neighbours[postal_code] = Polygon(points).envelope
 
