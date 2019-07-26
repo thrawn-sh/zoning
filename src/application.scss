@@ -8,26 +8,15 @@
         }
     }
 
-    padding: 1em;
     display: flex;
     flex-grow: 1;
-    min-width: 600px;
     height: 800px;
+    min-width: 600px;
+    padding: 1em;
 }
 
 #menu {
-    display: flex;
-    flex-grow: 1;
-    min-width: 600px;
-    flex-direction: column;
-    padding: 1em;
-
-    .label {
-        text-align: right;
-    }
-
     table {
-
         &.bounded {
             th {
                 border-bottom: 1px solid #000;
@@ -49,10 +38,16 @@
         border-collapse: collapse;
         vertical-align: middle;
     }
-}
 
-input {
-    margin: 0.25em;
+    .label {
+        text-align: right;
+    }
+
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-width: 600px;
+    padding: 1em;
 }
 
 #sum {
@@ -65,6 +60,10 @@ body {
     font-family: sans-serif;
 }
 
+input {
+    margin: 0.25em;
+}
+
 main {
     display: flex;
     flex-direction: row;
@@ -72,6 +71,9 @@ main {
     padding: 0.5em;
 }
 
+.center {
+    text-align: center;
+}
 
 .right {
     text-align: right;
