@@ -2,7 +2,7 @@ class ZoneSelections {
 
     private readonly formatter: Intl.NumberFormat;
     
-    private readonly selections: Set<Zone> = new Set();
+    private readonly selections: Map<string, Zone> = new Map();
     
     private readonly sumCell: HTMLTableDataCellElement = <HTMLTableDataCellElement>document.getElementById('sum');
     
@@ -10,28 +10,34 @@ class ZoneSelections {
 
     private totalPopulation: number = 0;
 
-    constructor(formatter: Intl.NumberFormat) {
+    private readonly centerCallback: (postalcode: string) => void;
+
+    private readonly deleteCallback: () => void;
+
+    constructor(formatter: Intl.NumberFormat, centerCallback: (postalcode: string) => void, deleteCallback: () => void) {
+        this.centerCallback = centerCallback;
+        this.deleteCallback = deleteCallback;
         this.formatter = formatter;
     }
 
     has(zone: Zone): boolean {
-        return this.selections.has(zone);
+        return this.selections.has(zone.postalCode);
     }
 
     addZone(zone: Zone): void {
-        if (this.selections.has(zone)) {
+        if (this.selections.has(zone.postalCode)) {
             return;
         }
 
-        this.selections.add(zone);
+        this.selections.set(zone.postalCode, zone);
         this.totalPopulation += parseInt(zone.population);
         this.addRow(zone);
         this.renderFields(this.totalPopulation);
     }
 
     removeZone(zone: Zone): void {
-        if (this.selections.has(zone)) {
-            this.selections.delete(zone);
+        if (this.selections.has(zone.postalCode)) {
+            this.selections.delete(zone.postalCode);
             this.totalPopulation -= parseInt(zone.population);
             this.renderFields(this.totalPopulation);
         }
@@ -52,16 +58,26 @@ class ZoneSelections {
         populationCell.classList.add('right');
 
         let buttonCell: HTMLTableDataCellElement = row.insertCell();
+        let that = this;
         let buttonDelete: HTMLInputElement = document.createElement('input');
         buttonDelete.type = 'button';
         buttonDelete.value = 'delete';
 
-        let that = this;
         buttonDelete.addEventListener('click', function() {
             that.table.removeChild(row);
             that.removeZone(zone);
+            that.deleteCallback();
         }, false);
         buttonCell.appendChild(buttonDelete);
+
+        let buttonCenter: HTMLInputElement = document.createElement('input');
+        buttonCenter.type = 'button';
+        buttonCenter.value = 'center';
+
+        buttonCenter.addEventListener('click', function() {
+            that.centerCallback(zone.postalCode);
+        }, false);
+        buttonCell.appendChild(buttonCenter);
     }
 
     private renderFields(total: number): void {

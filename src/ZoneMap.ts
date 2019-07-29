@@ -70,18 +70,46 @@ class ZoneMap {
                 }
                 this.features.add(neighbour);
                 let feature: GeoJSON.Feature<any, Zone> = JSON.parse(request.responseText);
-                let layer = this.zoneLayer.addData(feature);
+                let zone: Zone = feature.properties;
+                let style: L.PathOptions = this.calculateStyle(zone);
+                let layer: L.GeoJSON = <L.GeoJSON>this.zoneLayer.addData(feature);
+                layer.setStyle(style);
                 let that = this;
-                let postalCode = neighbour;
-                layer.addEventListener('click', function() {
-                    that.selectCallback(postalCode);
+                layer.on('click', function() {
+                    that.selectCallback(zone.postalCode);
                 });
             }
             request.send();
         }
+        this.redraw();
+    }
+
+    private calculateStyle(zone: Zone) : L.PathOptions {
+        let style: L.PathOptions = { };
+        if (zone.manager) {
+            style.fillColor = '#de4f06'; 
+        }
+        if (this.selections.has(zone)) {
+            style.fillColor = '#ffff00';
+        }
+        if (this.info.isSelectedZone(zone)) {
+            style.fillColor = '#8a2be2';
+        }
+        return style;
     }
 
     redraw(): void {
-        // FIXME
+        let that = this;
+        this.zoneLayer.eachLayer(function (layer: L.Layer) {  
+            if (layer instanceof L.GeoJSON) {
+                let geo: L.GeoJSON<Zone> = layer;
+                let feature: GeoJSON.Feature<GeoJSON.MultiPoint, Zone> | undefined = <any>geo.feature; // FIXME
+                if (feature) {
+                    let zone: Zone = feature.properties;
+                    let style: L.PathOptions = that.calculateStyle(zone);
+                    layer.setStyle(style);
+                }
+            }
+        });
     }
 }

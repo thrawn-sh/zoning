@@ -25,7 +25,7 @@ class ZoneApplication {
 
     constructor() {
         let formatter: Intl.NumberFormat = new Intl.NumberFormat();
-        this.selections = new ZoneSelections(formatter);
+        this.selections = new ZoneSelections(formatter, (postalCode: string) : void => { this.selectPostalCode(postalCode); }, (): void => { this.info.rerender() });
         this.info = new ZoneInfo(formatter, this.selections);
         this.map = new ZoneMap(this.info, this.selections, (postalCode: string) : void => {
             this.selectPostalCode(postalCode);
@@ -72,13 +72,11 @@ class ZoneApplication {
             let request = new XMLHttpRequest();
             request.open('GET', `/api/geo/${postalCode}.geojson`);
             request.onload = () => {
-                if (request.status !== 200) {
-                   this.searching = false;
-                   return;
-                }
-                let feature: GeoJSON.Feature<any, Zone> = JSON.parse(request.responseText);
-                this.info.selectZone(feature.properties);
-                this.map.select(feature);
+                if (request.status === 200) {
+                    let feature: GeoJSON.Feature<any, Zone> = JSON.parse(request.responseText);
+                    this.info.selectZone(feature.properties);
+                    this.map.select(feature);
+                } 
                 this.searching = false;
             }
             request.send();

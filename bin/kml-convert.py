@@ -78,6 +78,20 @@ def kml_to_geojson(features, output_folder='api'):
         with open(folder + '/' + feature + '.geojson', 'w') as outfile:
             json.dump(features[feature], outfile, indent=4, ensure_ascii=False)
 
+def zones(cities, output_folder='api'):
+    os.makedirs(output_folder, exist_ok=True)
+
+    listing = collections.OrderedDict()
+    listing['zones'] = list()
+    for city in sorted(cities):
+        listing['zones'].append({
+            'label': city + ' (' + cities[city] + ')',
+            'value': city
+        })
+
+    with open(output_folder + '/zones.json', 'w') as outfile:
+        json.dump(listing, outfile, indent=4, ensure_ascii=False)
+
 def kml_to_json(kml, city_dictionary, state_dictionary, population_dictionary, management_dictionary, output_folder='api'):
     coordinates = { }
 
@@ -158,6 +172,7 @@ def main():
             postal_code = row['plz']
             city[postal_code]  = row['ort']
             state[postal_code] = row['bundesland']
+    zones(city, args.output)
 
     population = { }
     with open(args.population) as f:

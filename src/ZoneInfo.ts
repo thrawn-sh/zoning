@@ -50,6 +50,10 @@ class ZoneInfo {
         }
     }
 
+    isSelectedZone(zone: Zone) : boolean {
+        return this.zone.postalCode === zone.postalCode;
+    }
+
     private renderFields(zone: Zone): void {
         let manager: string | undefined = this.zone.manager;
         this.button.disabled = <boolean>(manager || this.selections.has(zone));
@@ -58,6 +62,10 @@ class ZoneInfo {
         this.postalcode.value = zone.postalCode;
         this.population.value = this.formatter.format(parseInt(zone.population));
         this.state.value = zone.state;
+    }
+
+    rerender(): void {
+        this.renderFields(this.zone);
     }
 
     reset(): void {
