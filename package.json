@@ -4,6 +4,8 @@
     "version": "1.0.0",
     "description": "Zoning Application",
     "devDependencies": {
+        "@types/geojson": "^7946.0.7",
+        "@types/leaflet": "^1.5.0",
         "connect-history-api-fallback": "1.6.0",
         "del": "5.0.0",
         "gulp": "4.0.2",
@@ -30,8 +32,6 @@
         "yargs": "13.3.0"
     },
     "dependencies": {
-        "@types/geojson": "^7946.0.7",
-        "@types/leaflet": "^1.5.0",
         "leaflet": "^1.5.1",
         "roboto-fontface": "^0.10.0"
     },
