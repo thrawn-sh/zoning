@@ -41,10 +41,11 @@
     "scripts": {
         "build": "gulp build",
         "clean": "gulp clean",
-        "preupdate-npm": "npm install",
-        "update-npm": "npm-check-updates --upgrade",
         "prerelease": "npm install",
+        "preupdate-npm": "npm install",
         "release": "gulp build --production",
-        "start": "gulp serve"
+        "start": "gulp serve",
+        "tsc": "tsc",
+        "update-npm": "npm-check-updates --upgrade"
     }
 }
