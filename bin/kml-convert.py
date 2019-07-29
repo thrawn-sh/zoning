@@ -16,8 +16,8 @@ def calculate_center(points):
     min_lng =  1000
 
     for point in points:
-        lat = point[0]
-        lng = point[1]
+        lat = point[1]
+        lng = point[0]
 
         if lat > max_lat:
             max_lat = lat
@@ -34,22 +34,33 @@ def sortFeature(feature):
     return feature['properties']['name']
 
 
-def calculate_features(kml):
+def calculate_features(kml, city, state, population, management, neighbours):
     features = { }
     for pm in kml.cssselect('Placemark'):
         postal_code = pm.cssselect('name')[0].text_content()
 
+        all_points = []
         coordinates = []
         for c in pm.cssselect('coordinates'):
             points = []
             for p in c.text_content().split(' '):
                 (x, y) = p.split(',')
                 points.append((float(x), float(y)))
+                all_points.append((float(x), float(y)))
             coordinates.append(points)
 
         feature = collections.OrderedDict()
         feature['type']                    = 'Feature'
-        feature['properties']              = { 'name': postal_code }
+        feature['id']                      = postal_code
+        feature['properties']              = { 
+                'center':     calculate_center(all_points),
+                'manager':    management.get(postal_code),
+                'neighbours': sorted(list(neighbours.get(postal_code))),
+                'place':      city.get(postal_code),
+                'population': population.get(postal_code),
+                'postalCode': postal_code,
+                'state':      state.get(postal_code),
+        }
         feature['geometry']                = collections.OrderedDict()
         feature['geometry']['type']        = 'Polygon'
         feature['geometry']['coordinates'] = coordinates
@@ -171,13 +182,13 @@ def main():
 
     kml_document = html.fromstring(kml)
     if args.geojson:
-        features = calculate_features(kml_document)
+        features = calculate_features(kml_document, city, state, population, management, neighbours)
         kml_to_geojson(features, args.output)
-        for depth in [1, 2]:
-            kml_to_neighbours(features, neighbours, depth);
+        #for depth in [1, 2]:
+        #    kml_to_neighbours(features, neighbours, depth);
 
-    if args.json:
-        kml_to_json(kml_document, city, state, population, management, args.output)
+    #if args.json:
+    #    kml_to_json(kml_document, city, state, population, management, args.output)
 
 if __name__ == '__main__':
     main()
