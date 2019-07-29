@@ -1,8 +1,9 @@
-import * as leaflet from 'leaflet';
+/// <reference path="../node_modules/@types/leaflet/index.d.ts"/>
 
-export interface Zone {
-    readonly center: leaflet.LatLngTuple;
+interface Zone {
+    readonly center: L.LatLngTuple;
     readonly manager: string | undefined;
+    readonly neighbours: Array<string>;
     readonly place: string;
     readonly population: string;
     readonly postalCode: string;

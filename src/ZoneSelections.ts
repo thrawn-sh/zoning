@@ -1,6 +1,4 @@
-import { Zone } from "./Zone";
-
-export class ZoneSelections {
+class ZoneSelections {
 
     private readonly formatter: Intl.NumberFormat;
     
@@ -35,6 +33,7 @@ export class ZoneSelections {
         if (this.selections.has(zone)) {
             this.selections.delete(zone);
             this.totalPopulation -= parseInt(zone.population);
+            this.renderFields(this.totalPopulation);
         }
     }
 
@@ -53,18 +52,16 @@ export class ZoneSelections {
         populationCell.classList.add('right');
 
         let buttonCell: HTMLTableDataCellElement = row.insertCell();
-        let button: HTMLInputElement = document.createElement('input');
-        button.type = 'button';
-        button.value = 'delete';
+        let buttonDelete: HTMLInputElement = document.createElement('input');
+        buttonDelete.type = 'button';
+        buttonDelete.value = 'delete';
 
         let that = this;
-        button.addEventListener('click', function() {
-                let sum: number = parseInt(that.sumCell.innerText);
-                sum -= parseInt(zone.population);
-                that.sumCell.innerText = that.formatter.format(sum);
-            row.parentNode.removeChild(row);
+        buttonDelete.addEventListener('click', function() {
+            that.table.removeChild(row);
+            that.removeZone(zone);
         }, false);
-        buttonCell.appendChild(button);
+        buttonCell.appendChild(buttonDelete);
     }
 
     private renderFields(total: number): void {
@@ -73,10 +70,11 @@ export class ZoneSelections {
 
     reset(): void {
         this.selections.clear();
-        this.renderFields(0);
+        this.totalPopulation = 0;
+        this.renderFields(this.totalPopulation);
 
-        for (const child of this.table.children) {
-            child.parentNode.removeChild(child);
+        for (const child of Array.from(this.table.children)) {
+            this.table.removeChild(child);
         }
     }
 }

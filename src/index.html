@@ -15,12 +15,19 @@
             <div id="menu">
                 <h2>Search</h2>
                 <div>
-                    <input id="search" placeholder="enter postal code" type="text" onfocusout="gotoPostalCode(true)"></input>
-                    <input type="button" value="Go" onclick="gotoPostalCode(true)"></input>
+                    <input id="search" placeholder="enter postal code" type="text" onfocusout="application.searchPostalCode()"></input>
+                    <input type="button" value="Go" onclick="application.searchPostalCode()"></input>
+                    <input type="button" value="Clear" onclick="application.reset()"></input>
                 </div>
                 <h2>Current Zone</h2>
                 <div>
                     <table>
+                        <tr>
+                            <td class="label">Postal Code:</td>
+                            <td>
+                                <input id="postalcode" type="text" disabled readonly></input>
+                            </td>
+                        </tr>
                         <tr>
                             <td class="label">City / Community:</td>
                             <td>
@@ -47,7 +54,7 @@
                         </tr>
                         <tr>
                             <td class="label" colspan="2">
-                                <input id="add" type="button" value="Add current zone" onclick="addCurrentZone()"></input>
+                                <input id="add" type="button" value="Add current zone" onclick="application.addToSelection()"></input>
                             </td>
                         </tr>
                     </table>
