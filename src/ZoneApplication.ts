@@ -1,5 +1,14 @@
 /// <reference path="../node_modules/@types/geojson/index.d.ts"/>
 
+interface Zones {
+    readonly zones: Array<ZoneOption>;
+}
+
+interface ZoneOption {
+    readonly label: string;
+    readonly value: string;
+}
+
 class ZoneApplication {
 
     private readonly info: ZoneInfo;
@@ -7,6 +16,8 @@ class ZoneApplication {
     private readonly map: ZoneMap;
 
     private readonly search: HTMLInputElement = <HTMLInputElement>document.getElementById('search');
+
+    private readonly list: HTMLDataListElement = <HTMLDataListElement>document.getElementById('zones');
     
     private readonly selections: ZoneSelections;
 
@@ -20,6 +31,24 @@ class ZoneApplication {
             this.selectPostalCode(postalCode);
         });
         this.reset();
+    }
+
+    init(): void {
+        let request = new XMLHttpRequest();
+        request.open('GET', '/api/zones.json');
+        request.onload = () => {
+            if (request.status !== 200) {
+                return;
+            }
+            let zoneList: Zones = JSON.parse(request.responseText);
+            for (const option of zoneList.zones) {
+                let optionElement: HTMLOptionElement = document.createElement('option');                
+                optionElement.label = option.label;
+                optionElement.value = option.value;
+                this.list.appendChild(optionElement);
+            }
+        }
+        request.send();
     }
 
     reset(): void {
@@ -44,6 +73,7 @@ class ZoneApplication {
             request.open('GET', `/api/geo/${postalCode}.geojson`);
             request.onload = () => {
                 if (request.status !== 200) {
+                   this.searching = false;
                    return;
                 }
                 let feature: GeoJSON.Feature<any, Zone> = JSON.parse(request.responseText);
@@ -62,3 +92,4 @@ class ZoneApplication {
 }
 
 let application = new ZoneApplication();
+application.init();

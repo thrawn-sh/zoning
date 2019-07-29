@@ -15,7 +15,8 @@
             <div id="menu">
                 <h2>Search</h2>
                 <div>
-                    <input id="search" placeholder="enter postal code" type="text" onfocusout="application.searchPostalCode()"></input>
+                    <input id="search" list="zones" placeholder="enter postal code" type="list" onfocusout="application.searchPostalCode()"></input>
+                    <datalist id="zones"></datalist>
                     <input type="button" value="Go" onclick="application.searchPostalCode()"></input>
                     <input type="button" value="Clear" onclick="application.reset()"></input>
                 </div>
