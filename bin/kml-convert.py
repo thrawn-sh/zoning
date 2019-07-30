@@ -110,12 +110,12 @@ def zones(cities, output_folder='api'):
 
 def main():
     parser = argparse.ArgumentParser(description="generate api data", add_help=True)
-    parser.add_argument("-a", "--area",        help="area CSV",         required=True, default='area.csv'                         )
-    parser.add_argument("-m", "--management",  help="management CSV",   required=True, default='management.csv'                   )
-    parser.add_argument("-n", "--neighbours",  help="neighbours CSV",   required=True, default='neighbour.csv'                    )
-    parser.add_argument("-o", "--output",      help="output folder",    required=True, default='api'                              )
-    parser.add_argument("-p", "--population",  help="population CSV",   required=True, default='population.csv'                   )
-    parser.add_argument("-z", "--zone",        help="zone KMZ",         required=True, default='zone.kmz'                         )
+    parser.add_argument("-a", "--area",        help="area CSV",       default='./assets/area.csv'      )
+    parser.add_argument("-m", "--management",  help="management CSV", default='./assets/management.csv')
+    parser.add_argument("-n", "--neighbours",  help="neighbours CSV", default='./assets/neighbours.csv')
+    parser.add_argument("-o", "--output",      help="output folder",  default='./api'                  )
+    parser.add_argument("-p", "--population",  help="population CSV", default='./assets/population.csv')
+    parser.add_argument("-z", "--zone",        help="zone KMZ",       default='./assets/zone.kmz'      )
 
     args = parser.parse_args()
 
