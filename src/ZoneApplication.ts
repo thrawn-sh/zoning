@@ -12,78 +12,78 @@ interface ZoneOption {
 class ZoneApplication {
 
     private readonly info: ZoneInfo;
-    
+
+    private readonly list: HTMLDataListElement = document.getElementById("zones") as HTMLDataListElement;
+
     private readonly map: ZoneMap;
 
-    private readonly search: HTMLInputElement = <HTMLInputElement>document.getElementById('search');
-
-    private readonly list: HTMLDataListElement = <HTMLDataListElement>document.getElementById('zones');
-    
-    private readonly selections: ZoneSelections;
+    private readonly search: HTMLInputElement = document.getElementById("search") as HTMLInputElement;
 
     private searching: boolean = false;
 
-    constructor() {
-        let formatter: Intl.NumberFormat = new Intl.NumberFormat();
-        this.selections = new ZoneSelections(formatter, (postalCode: string) : void => { this.selectPostalCode(postalCode); }, (): void => { this.info.rerender() });
+    private readonly selections: ZoneSelections;
+
+    public constructor() {
+        const formatter: Intl.NumberFormat = new Intl.NumberFormat();
+        this.selections = new ZoneSelections(formatter, (postalCode: string): void => { this.selectPostalCode(postalCode); }, (): void => { this.info.rerender(); });
         this.info = new ZoneInfo(formatter, this.selections);
-        this.map = new ZoneMap(this.info, this.selections, (postalCode: string) : void => {
+        this.map = new ZoneMap(this.info, this.selections, (postalCode: string): void => {
             this.selectPostalCode(postalCode);
         });
         this.reset();
     }
 
-    init(): void {
-        let request = new XMLHttpRequest();
-        request.open('GET', '/api/zones.json');
+    public addToSelection(): void {
+        this.info.addToSelection();
+    }
+
+    public init(): void {
+        const request = new XMLHttpRequest();
+        request.open("GET", "/api/zones.json");
         request.onload = () => {
             if (request.status !== 200) {
                 return;
             }
-            let zoneList: Zones = JSON.parse(request.responseText);
+            const zoneList: Zones = JSON.parse(request.responseText);
             for (const option of zoneList.zones) {
-                let optionElement: HTMLOptionElement = document.createElement('option');                
+                const optionElement: HTMLOptionElement = document.createElement("option");
                 optionElement.label = option.label;
                 optionElement.value = option.value;
                 this.list.appendChild(optionElement);
             }
-        }
+        };
         request.send();
     }
 
-    reset(): void {
+    public reset(): void {
         this.info.reset();
         this.map.reset();
-        this.search.value = '';
+        this.search.value = "";
         this.selections.reset();
     }
 
-    addToSelection(): void {
-        this.info.addToSelection();
-    }
-
-    searchPostalCode(): void {
+    public searchPostalCode(): void {
         if (this.searching) {
             return;
         }
         this.searching = true;
-        let postalCode = this.search.value;
+        const postalCode = this.search.value;
         if (postalCode) {
-            let request = new XMLHttpRequest();
-            request.open('GET', `/api/geo/${postalCode}.geojson`);
+            const request = new XMLHttpRequest();
+            request.open("GET", `/api/geo/${postalCode}.geojson`);
             request.onload = () => {
                 if (request.status === 200) {
-                    let feature: GeoJSON.Feature<any, Zone> = JSON.parse(request.responseText);
+                    const feature: GeoJSON.Feature<any, Zone> = JSON.parse(request.responseText);
                     this.info.selectZone(feature.properties);
                     this.map.select(feature);
-                } 
+                }
                 this.searching = false;
-            }
+            };
             request.send();
         }
     }
 
-    private selectPostalCode(postalCode: string) : void {
+    private selectPostalCode(postalCode: string): void {
         this.search.value = postalCode;
         this.searchPostalCode();
     }
