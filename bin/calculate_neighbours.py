@@ -44,8 +44,8 @@ def calculate_neighbours(kml):
 
 def main():
     parser = argparse.ArgumentParser(description="calculate neighbouring information", add_help=True)
-    parser.add_argument("-o", "--output",     help="output file",      required=True, default='api'     )
-    parser.add_argument("-z", "--zone",       help="zone KMZ",         required=True, default='zone.kmz')
+    parser.add_argument("-o", "--output", help="output file", default='./assets/neighbours.csv')
+    parser.add_argument("-z", "--zone",   help="zone KMZ",    default='./assets/zone.kmz'      )
 
     args = parser.parse_args()
 
