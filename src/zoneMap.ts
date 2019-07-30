@@ -29,13 +29,13 @@ class ZoneMap {
             minZoom: this.minZoom,
             zoom:    this.minZoom,
         });
-        const tileLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        const tileLayer: L.TileLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
             attribution:  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         });
         this.map.addLayer(tileLayer);
         this.zoneLayer = L.geoJSON();
-        this.zoneLayer.bindTooltip(function(layer: L.Layer) {
-            const feature: GeoJSON.Feature<any, IZone> = (layer as any).feature; // FIXME
+        this.zoneLayer.bindTooltip((layer: L.Layer): string => {
+            const feature: GeoJSON.Feature<GeoJSON.Geometry, IZone> = ((layer as L.GeoJSON<IZone>).feature as GeoJSON.Feature<GeoJSON.Geometry, IZone>); // FIXME
             return feature.properties.postalCode;
         },                         { sticky: true });
         this.map.addLayer(this.zoneLayer);
@@ -44,14 +44,13 @@ class ZoneMap {
     }
 
     public redraw(): void {
-        const that = this;
-        this.zoneLayer.eachLayer(function(layer: L.Layer) {
+        const self: ZoneMap = this;
+        this.zoneLayer.eachLayer((layer: L.Layer): void => {
             if (layer instanceof L.GeoJSON) {
-                const geo: L.GeoJSON<IZone> = layer;
-                const feature: GeoJSON.Feature<GeoJSON.MultiPoint, IZone> | undefined = geo.feature as any; // FIXME
+                const feature: GeoJSON.Feature<GeoJSON.Geometry, IZone> = ((layer as L.GeoJSON<IZone>).feature as GeoJSON.Feature<GeoJSON.Geometry, IZone>); // FIXME
                 if (feature) {
                     const zone: IZone = feature.properties;
-                    const style: L.PathOptions = that.calculateStyle(zone);
+                    const style: L.PathOptions = self.calculateStyle(zone);
                     layer.setStyle(style);
                 }
             }
@@ -64,14 +63,16 @@ class ZoneMap {
         this.map.flyTo(this.germanyCenter, this.minZoom);
     }
 
-    public select(zone: GeoJSON.Feature<any, IZone>): void {
+    public select(zone: GeoJSON.Feature<GeoJSON.Geometry, IZone>): void {
         const center: L.LatLng = L.latLng(zone.properties.center);
-        if (this.map.getCenter().equals(this.germanyCenter)) {
+        const mapCenter: L.LatLng = this.map.getCenter();
+        if (mapCenter.equals(this.germanyCenter)) {
             this.map.flyTo(center, this.maxZoom - 1);
         } else {
             this.map.panTo(center);
         }
 
+        const self: ZoneMap = this;
         for (const neighbour of zone.properties.neighbours) {
             if (this.features.has(neighbour)) {
                 continue;
@@ -84,14 +85,13 @@ class ZoneMap {
                     return;
                 }
                 this.features.add(neighbour);
-                const feature: GeoJSON.Feature<any, IZone> = JSON.parse(request.responseText);
-                const zone: IZone = feature.properties;
-                const style: L.PathOptions = this.calculateStyle(zone);
+                const feature: GeoJSON.Feature<GeoJSON.Geometry, IZone> = JSON.parse(request.responseText) as GeoJSON.Feature<GeoJSON.Geometry, IZone>;
+                const featureZone: IZone = feature.properties;
+                const style: L.PathOptions = this.calculateStyle(featureZone);
                 const layer: L.GeoJSON = this.zoneLayer.addData(feature) as L.GeoJSON;
                 layer.setStyle(style);
-                const that = this;
-                layer.on("click", function() {
-                    that.selectCallback(zone.postalCode);
+                layer.on("click", (): void => {
+                    self.selectCallback(featureZone.postalCode);
                 });
             };
             request.send();

@@ -40,11 +40,11 @@ class ZoneApplication {
     public init(): void {
         const request: XMLHttpRequest = new XMLHttpRequest();
         request.open("GET", "/api/zones.json");
-        request.onload = () => {
+        request.onload = (): void => {
             if (request.status !== 200) {
                 return;
             }
-            const zoneList: IZones = JSON.parse(request.responseText);
+            const zoneList: IZones = JSON.parse(request.responseText) as IZones;
             for (const option of zoneList.zones) {
                 const optionElement: HTMLOptionElement = document.createElement("option");
                 optionElement.label = option.label;
@@ -71,9 +71,9 @@ class ZoneApplication {
         if (postalCode) {
             const request: XMLHttpRequest = new XMLHttpRequest();
             request.open("GET", `/api/geo/${postalCode}.geojson`);
-            request.onload = () => {
+            request.onload = (): void => {
                 if (request.status === 200) {
-                    const feature: GeoJSON.Feature<any, IZone> = JSON.parse(request.responseText);
+                    const feature: GeoJSON.Feature<GeoJSON.Geometry, IZone> = JSON.parse(request.responseText) as GeoJSON.Feature<GeoJSON.Geometry, IZone>;
                     this.info.selectZone(feature.properties);
                     this.map.select(feature);
                 }

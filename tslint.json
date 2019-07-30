@@ -13,6 +13,7 @@
         "no-inferrable-types": false,
         "no-magic-numbers": false,
         "no-namespace": false,
+        "no-reference": false,
         "no-unbound-method": [true, "ignore-static"],
         "no-unnecessary-class": [true, "allow-empty-class", "allow-static-only"],
         "prefer-conditional-expression": false

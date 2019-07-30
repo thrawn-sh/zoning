@@ -68,15 +68,15 @@ class ZoneSelections {
         populationCell.classList.add("right");
 
         const buttonCell: HTMLTableDataCellElement = row.insertCell();
-        const that = this;
+        const self: ZoneSelections = this;
         const buttonDelete: HTMLInputElement = document.createElement("input");
         buttonDelete.type = "button";
         buttonDelete.value = "delete";
 
         buttonDelete.addEventListener("click", (): void => {
-            that.table.removeChild(row);
-            that.removeZone(zone);
-            that.deleteCallback();
+            self.table.removeChild(row);
+            self.removeZone(zone);
+            self.deleteCallback();
         },                            false);
         buttonCell.appendChild(buttonDelete);
 
@@ -85,7 +85,7 @@ class ZoneSelections {
         buttonCenter.value = "center";
 
         buttonCenter.addEventListener("click", (): void => {
-            that.centerCallback(zone.postalCode);
+            self.centerCallback(zone.postalCode);
         },                            false);
         buttonCell.appendChild(buttonCenter);
     }
