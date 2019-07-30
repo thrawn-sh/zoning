@@ -1,6 +1,6 @@
 /// <reference path="../node_modules/@types/leaflet/index.d.ts"/>
 
-interface Zone {
+interface IZone {
     readonly center: L.LatLngTuple;
     readonly manager: string | undefined;
     readonly neighbours: Array<string>;

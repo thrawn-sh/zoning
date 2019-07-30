@@ -2,7 +2,7 @@
 
 class ZoneInfo {
 
-    private static readonly DUMMY: Zone = {
+    private static readonly DUMMY: IZone = {
         center: [ 51.0948001, 10.2651007 ],
         manager: undefined,
         neighbours: [],
@@ -28,7 +28,7 @@ class ZoneInfo {
 
     private readonly state: HTMLInputElement = document.getElementById("state") as HTMLInputElement;
 
-    private zone: Zone = ZoneInfo.DUMMY;
+    private zone: IZone = ZoneInfo.DUMMY;
 
     public constructor(formatter: Intl.NumberFormat, selections: ZoneSelections) {
         this.formatter = formatter;
@@ -42,7 +42,7 @@ class ZoneInfo {
         }
     }
 
-    public isSelectedZone(zone: Zone): boolean {
+    public isSelectedZone(zone: IZone): boolean {
         return this.zone.postalCode === zone.postalCode;
     }
 
@@ -55,7 +55,7 @@ class ZoneInfo {
         this.renderFields(this.zone);
     }
 
-    public selectZone(zone: Zone): void {
+    public selectZone(zone: IZone): void {
         if (this.zone.postalCode === zone.postalCode) {
             return;
         }
@@ -63,13 +63,13 @@ class ZoneInfo {
         this.renderFields(zone);
     }
 
-    private renderFields(zone: Zone): void {
+    private renderFields(zone: IZone): void {
         const manager: string | undefined = this.zone.manager;
         this.button.disabled = (manager || this.selections.has(zone)) as boolean;
         this.manager.value = (manager) ? manager : "";
         this.place.value = zone.place;
         this.postalcode.value = zone.postalCode;
-        this.population.value = this.formatter.format(parseInt(zone.population));
+        this.population.value = this.formatter.format(parseInt(zone.population, 10));
         this.state.value = zone.state;
     }
 }

@@ -19,7 +19,7 @@ class ZoneMap {
 
     private readonly selections: ZoneSelections;
 
-    private readonly zoneLayer: L.GeoJSON<Zone>;
+    private readonly zoneLayer: L.GeoJSON<IZone>;
 
     public constructor(info: ZoneInfo, selections: ZoneSelections, selectCallback: (postalcode: string) => void) {
         this.info = info;
@@ -35,7 +35,7 @@ class ZoneMap {
         this.map.addLayer(tileLayer);
         this.zoneLayer = L.geoJSON();
         this.zoneLayer.bindTooltip(function(layer: L.Layer) {
-            const feature: GeoJSON.Feature<any, Zone> = (layer as any).feature; // FIXME
+            const feature: GeoJSON.Feature<any, IZone> = (layer as any).feature; // FIXME
             return feature.properties.postalCode;
         },                         { sticky: true });
         this.map.addLayer(this.zoneLayer);
@@ -47,10 +47,10 @@ class ZoneMap {
         const that = this;
         this.zoneLayer.eachLayer(function(layer: L.Layer) {
             if (layer instanceof L.GeoJSON) {
-                const geo: L.GeoJSON<Zone> = layer;
-                const feature: GeoJSON.Feature<GeoJSON.MultiPoint, Zone> | undefined = geo.feature as any; // FIXME
+                const geo: L.GeoJSON<IZone> = layer;
+                const feature: GeoJSON.Feature<GeoJSON.MultiPoint, IZone> | undefined = geo.feature as any; // FIXME
                 if (feature) {
-                    const zone: Zone = feature.properties;
+                    const zone: IZone = feature.properties;
                     const style: L.PathOptions = that.calculateStyle(zone);
                     layer.setStyle(style);
                 }
@@ -64,7 +64,7 @@ class ZoneMap {
         this.map.flyTo(this.germanyCenter, this.minZoom);
     }
 
-    public select(zone: GeoJSON.Feature<any, Zone>): void {
+    public select(zone: GeoJSON.Feature<any, IZone>): void {
         const center: L.LatLng = L.latLng(zone.properties.center);
         if (this.map.getCenter().equals(this.germanyCenter)) {
             this.map.flyTo(center, this.maxZoom - 1);
@@ -77,15 +77,15 @@ class ZoneMap {
                 continue;
             }
 
-            const request = new XMLHttpRequest();
+            const request: XMLHttpRequest = new XMLHttpRequest();
             request.open("GET", `/api/geo/${neighbour}.geojson`);
             request.onload = (): void => {
                 if (request.status !== 200) {
                     return;
                 }
                 this.features.add(neighbour);
-                const feature: GeoJSON.Feature<any, Zone> = JSON.parse(request.responseText);
-                const zone: Zone = feature.properties;
+                const feature: GeoJSON.Feature<any, IZone> = JSON.parse(request.responseText);
+                const zone: IZone = feature.properties;
                 const style: L.PathOptions = this.calculateStyle(zone);
                 const layer: L.GeoJSON = this.zoneLayer.addData(feature) as L.GeoJSON;
                 layer.setStyle(style);
@@ -99,7 +99,7 @@ class ZoneMap {
         this.redraw();
     }
 
-    private calculateStyle(zone: Zone): L.PathOptions {
+    private calculateStyle(zone: IZone): L.PathOptions {
         const style: L.PathOptions = { };
         if (zone.manager) {
             style.fillColor = "#de4f06";

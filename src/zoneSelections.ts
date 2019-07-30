@@ -6,7 +6,7 @@ class ZoneSelections {
 
     private readonly formatter: Intl.NumberFormat;
 
-    private readonly selections: Map<string, Zone> = new Map();
+    private readonly selections: Map<string, IZone> = new Map();
 
     private readonly sumCell: HTMLTableDataCellElement = document.getElementById("sum") as HTMLTableDataCellElement;
 
@@ -20,7 +20,7 @@ class ZoneSelections {
         this.formatter = formatter;
     }
 
-    public addZone(zone: Zone): void {
+    public addZone(zone: IZone): void {
         if (this.selections.has(zone.postalCode)) {
             return;
         }
@@ -31,11 +31,11 @@ class ZoneSelections {
         this.renderFields(this.totalPopulation);
     }
 
-    public has(zone: Zone): boolean {
+    public has(zone: IZone): boolean {
         return this.selections.has(zone.postalCode);
     }
 
-    public removeZone(zone: Zone): void {
+    public removeZone(zone: IZone): void {
         if (this.selections.has(zone.postalCode)) {
             this.selections.delete(zone.postalCode);
             this.totalPopulation -= parseInt(zone.population, 10);
@@ -53,7 +53,7 @@ class ZoneSelections {
         }
     }
 
-    private addRow(zone: Zone): void {
+    private addRow(zone: IZone): void {
         const row: HTMLTableRowElement = this.table.insertRow();
 
         const placeCell: HTMLTableDataCellElement = row.insertCell();
