@@ -4,35 +4,50 @@
 import argparse
 import collections
 import csv
-import json
 from lxml import html
+import json
 import os
+import sys
 import zipfile
 
+def calculate_bounds(points):
+    north = -(sys.maxsize - 1)
+    east  = -(sys.maxsize - 1)
+    south =   sys.maxsize
+    west  =   sys.maxsize
+
+    for (lng, lat) in points:
+        if lat > east:
+            east = lat
+        if lat < west:
+            west = lat
+        if lng > north:
+            north = lng
+        if lng < south:
+            south = lng
+
+    return ( (south, west), (north, east) )
+
 def calculate_center(points):
-    max_lat = -1000
-    min_lat =  1000
-    max_lng = -1000
-    min_lng =  1000
+    north = -(sys.maxsize - 1)
+    east  = -(sys.maxsize - 1)
+    south =   sys.maxsize
+    west  =   sys.maxsize
 
-    for point in points:
-        lat = point[1]
-        lng = point[0]
+    for (lng, lat) in points:
+        if lat > east:
+            east = lat
+        if lat < west:
+            west = lat
+        if lng > north:
+            north = lng
+        if lng < south:
+            south = lng
 
-        if lat > max_lat:
-            max_lat = lat
-        if lat < min_lat:
-            min_lat = lat
-        if lng > max_lng:
-            max_lng = lng
-        if lng < min_lng:
-            min_lng = lng
-
-    return ((max_lat + min_lat) / 2, (max_lng + min_lng) / 2)
+    return ((east + west) / 2, (north + south) / 2)
 
 def sortFeature(feature):
-    return feature['properties']['name']
-
+    return feature['id']
 
 def calculate_features(kml, city, state, population, management, neighbours):
     features = { }
@@ -52,6 +67,7 @@ def calculate_features(kml, city, state, population, management, neighbours):
         feature = collections.OrderedDict()
         feature['id']                      = postal_code
         feature['properties']              = { 
+                'bounds':     calculate_bounds(all_points),
                 'center':     calculate_center(all_points),
                 'manager':    management.get(postal_code),
                 'neighbours': sorted(list(neighbours.get(postal_code))),
