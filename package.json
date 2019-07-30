@@ -42,7 +42,6 @@
     "scripts": {
         "build": "gulp build",
         "clean": "gulp clean",
-        "prerelease": "npm install",
         "preupdate-npm": "npm install",
         "release": "gulp build --production",
         "start": "gulp serve",
