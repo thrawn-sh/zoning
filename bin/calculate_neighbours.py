@@ -61,8 +61,7 @@ def main():
 
         writer.writeheader()
         for current in sorted(neighbours):
-            neighbour = list(neighbours[current])
-            neighbour.sort()
+            neighbour = sorted(list(neighbours[current]))
             writer.writerow({ 'plz': current, 'neighbours': ' '.join(neighbour) })
 
 if __name__ == '__main__':
