@@ -1,0 +1,20 @@
+{
+    "defaultSeverity": "error",
+    "extends": "tslint:all",
+    "rules": {
+        "array-type": [true, "generic"],
+        "comment-format": false,
+        "completed-docs": [true, { "methods": { "privacies": ["public"] } } ],
+        "max-classes-per-file": false,
+        "max-file-line-count": false,
+        "max-line-length": false,
+        "newline-before-return": false,
+        "no-any": true,
+        "no-inferrable-types": false,
+        "no-magic-numbers": [true, 0, 1, 2],
+        "no-namespace": false,
+        "no-unbound-method": [true, "ignore-static"],
+        "no-unnecessary-class": [true, "allow-empty-class", "allow-static-only"],
+        "prefer-conditional-expression": false
+    }
+}
