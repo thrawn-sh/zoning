@@ -23,7 +23,10 @@ var argv    = require('yargs').argv;
 var cache   = new cachebust({ checksumLength: 32 });
 var history = require('connect-history-api-fallback');
 
-
+function assets_api() { // {{{1
+    return gulp.src('api')
+        .pipe(gulp.symlink('dist/'));
+} // }}}1
 function assets_favicons() { // {{{1
     return gulp.src('favicon/**/*')
         .pipe(imagemin({
@@ -166,7 +169,7 @@ function serve() {
     //gulp.watch(['src/api/**/*'], assets_dev);
 }
 
-const build = gulp.series(clean, gulp.parallel(assets_favicons, assets_fonts, assets_images), css, js, html, compress);
+const build = gulp.series(clean, gulp.parallel(assets_api, assets_favicons, assets_fonts, assets_images), css, js, html, compress);
 exports.build = build;
 exports.serve = gulp.series(build, serve);
 exports.default = build;
