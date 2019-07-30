@@ -86,7 +86,7 @@ def calculate_features(kml, city, state, population, management, neighbours):
     return features
 
 
-def kml_to_geojson(features, output_folder='api'):
+def kml_to_geojson(features, output_folder):
     folder = output_folder + '/geo'
     os.makedirs(folder, exist_ok=True)
 
@@ -94,7 +94,27 @@ def kml_to_geojson(features, output_folder='api'):
         with open(folder + '/' + feature + '.geojson', 'w') as outfile:
             json.dump(features[feature], outfile, indent=4, ensure_ascii=False)
 
-def zones(cities, output_folder='api'):
+def generate_population_json(population, output_folder):
+    os.makedirs(output_folder, exist_ok=True)
+
+    listing = collections.OrderedDict()
+    for postal_code in sorted(population):
+        listing[postal_code] = population[postal_code]
+
+    with open(output_folder + '/population.json', 'w') as outfile:
+        json.dump(listing, outfile, indent=4, ensure_ascii=False)
+
+def generate_management_json(mangement, output_folder):
+    os.makedirs(output_folder, exist_ok=True)
+
+    listing = collections.OrderedDict()
+    for postal_code in sorted(mangement):
+        listing[postal_code] = mangement[postal_code]
+
+    with open(output_folder + '/mangement.json', 'w') as outfile:
+        json.dump(listing, outfile, indent=4, ensure_ascii=False)
+
+def generate_zones_json(cities, output_folder):
     os.makedirs(output_folder, exist_ok=True)
 
     listing = collections.OrderedDict()
@@ -131,7 +151,7 @@ def main():
             postal_code = row['plz']
             city[postal_code]  = row['ort']
             state[postal_code] = row['bundesland']
-    zones(city, args.output)
+    generate_zones_json(city, args.output)
 
     population = { }
     with open(args.population) as f:
@@ -139,6 +159,7 @@ def main():
         for row in dictionary:
             postal_code = row['plz']
             population[postal_code] = row['einwohner']
+    generate_population_json(population, args.output)
 
     management = { }
     with open(args.management) as f:
@@ -146,6 +167,7 @@ def main():
         for row in dictionary:
             postal_code = row['plz']
             management[postal_code] = row['management']
+    generate_management_json(management, args.output)
 
     neighbours = { }
     with open(args.neighbours) as f:
