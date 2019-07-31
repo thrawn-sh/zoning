@@ -1,4 +1,4 @@
-/// <reference path="../node_modules/@types/geojson/index.d.ts"/>
+/// <reference path='../node_modules/@types/geojson/index.d.ts'/>
 
 interface IZones {
     readonly zones: Array<IZoneOption>;
@@ -13,11 +13,11 @@ class ZoneApplication {
 
     private readonly info: ZoneInfo;
 
-    private readonly list: HTMLDataListElement = document.getElementById("zones") as HTMLDataListElement;
+    private readonly list: HTMLDataListElement = document.getElementById('zones') as HTMLDataListElement;
 
     private readonly map: ZoneMap;
 
-    private readonly search: HTMLInputElement = document.getElementById("search") as HTMLInputElement;
+    private readonly search: HTMLInputElement = document.getElementById('search') as HTMLInputElement;
 
     private searching: boolean = false;
 
@@ -39,14 +39,14 @@ class ZoneApplication {
 
     public init(): void {
         const request: XMLHttpRequest = new XMLHttpRequest();
-        request.open("GET", "/api/zones.json");
+        request.open('GET', '/api/zones.json');
         request.onload = (): void => {
             if (request.status !== 200) {
                 return;
             }
             const zoneList: IZones = JSON.parse(request.responseText) as IZones;
             for (const option of zoneList.zones) {
-                const optionElement: HTMLOptionElement = document.createElement("option");
+                const optionElement: HTMLOptionElement = document.createElement('option');
                 optionElement.label = option.label;
                 optionElement.value = option.value;
                 this.list.appendChild(optionElement);
@@ -58,7 +58,7 @@ class ZoneApplication {
     public reset(): void {
         this.info.reset();
         this.map.reset();
-        this.search.value = "";
+        this.search.value = '';
         this.selections.reset();
     }
 
@@ -68,9 +68,9 @@ class ZoneApplication {
         }
         this.searching = true;
         const postalCode: string = this.search.value;
-        if (postalCode) {
+        if (postalCode !== '') {
             const request: XMLHttpRequest = new XMLHttpRequest();
-            request.open("GET", `/api/geo/${postalCode}.geojson`);
+            request.open('GET', `/api/geo/${postalCode}.geojson`);
             request.onload = (): void => {
                 if (request.status === 200) {
                     const feature: GeoJSON.Feature<GeoJSON.Geometry, IZone> = JSON.parse(request.responseText) as GeoJSON.Feature<GeoJSON.Geometry, IZone>;

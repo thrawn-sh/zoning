@@ -1,5 +1,5 @@
-/// <reference path="../node_modules/@types/geojson/index.d.ts"/>
-/// <reference path="../node_modules/@types/leaflet/index.d.ts"/>
+/// <reference path='../node_modules/@types/geojson/index.d.ts'/>
+/// <reference path='../node_modules/@types/leaflet/index.d.ts'/>
 
 class ZoneMap {
 
@@ -23,13 +23,13 @@ class ZoneMap {
 
     public constructor(info: ZoneInfo, selections: ZoneSelections, selectCallback: (postalcode: string) => void) {
         this.info = info;
-        this.map = L.map("map", {
+        this.map = L.map('map', {
             center:  this.germanyCenter,
             maxZoom: this.maxZoom,
             minZoom: this.minZoom,
             zoom:    this.minZoom,
         });
-        const tileLayer: L.TileLayer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        const tileLayer: L.TileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution:  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         });
         this.map.addLayer(tileLayer);
@@ -44,15 +44,12 @@ class ZoneMap {
     }
 
     public redraw(): void {
-        const self: ZoneMap = this;
         this.zoneLayer.eachLayer((layer: L.Layer): void => {
             if (layer instanceof L.GeoJSON) {
                 const feature: GeoJSON.Feature<GeoJSON.Geometry, IZone> = ((layer as L.GeoJSON<IZone>).feature as GeoJSON.Feature<GeoJSON.Geometry, IZone>); // FIXME
-                if (feature) {
-                    const zone: IZone = feature.properties;
-                    const style: L.PathOptions = self.calculateStyle(zone);
-                    layer.setStyle(style);
-                }
+                const zone: IZone = feature.properties;
+                const style: L.PathOptions = this.calculateStyle(zone);
+                layer.setStyle(style);
             }
         });
     }
@@ -72,14 +69,14 @@ class ZoneMap {
             this.map.panTo(center);
         }
 
-        const self: ZoneMap = this;
+        const callback: (postalcode: string) => void = this.selectCallback;
         for (const neighbour of zone.properties.neighbours) {
             if (this.features.has(neighbour)) {
                 continue;
             }
 
             const request: XMLHttpRequest = new XMLHttpRequest();
-            request.open("GET", `/api/geo/${neighbour}.geojson`);
+            request.open('GET', `/api/geo/${neighbour}.geojson`);
             request.onload = (): void => {
                 if (request.status !== 200) {
                     return;
@@ -90,8 +87,8 @@ class ZoneMap {
                 const style: L.PathOptions = this.calculateStyle(featureZone);
                 const layer: L.GeoJSON = this.zoneLayer.addData(feature) as L.GeoJSON;
                 layer.setStyle(style);
-                layer.on("click", (): void => {
-                    self.selectCallback(featureZone.postalCode);
+                layer.on('click', (): void => {
+                    callback(featureZone.postalCode);
                 });
             };
             request.send();
@@ -101,14 +98,14 @@ class ZoneMap {
 
     private calculateStyle(zone: IZone): L.PathOptions {
         const style: L.PathOptions = { };
-        if (zone.manager) {
-            style.fillColor = "#de4f06";
+        if (!!zone.manager) {
+            style.fillColor = '#de4f06';
         }
         if (this.selections.has(zone)) {
-            style.fillColor = "#ffff00";
+            style.fillColor = '#ffff00';
         }
         if (this.info.isSelectedZone(zone)) {
-            style.fillColor = "#8a2be2";
+            style.fillColor = '#8a2be2';
         }
         return style;
     }

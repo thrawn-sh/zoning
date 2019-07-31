@@ -1,7 +1,7 @@
-/// <reference path="../node_modules/@types/leaflet/index.d.ts"/>
+/// <reference path='../node_modules/@types/leaflet/index.d.ts'/>
 
 interface IZone {
-    readonly bounds: L.Bounds;
+    readonly bounds: L.BoundsExpression;
     readonly center: L.LatLngTuple;
     readonly manager: string | undefined;
     readonly neighbours: Array<string>;

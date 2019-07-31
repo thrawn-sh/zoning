@@ -16,6 +16,7 @@
         "no-reference": false,
         "no-unbound-method": [true, "ignore-static"],
         "no-unnecessary-class": [true, "allow-empty-class", "allow-static-only"],
-        "prefer-conditional-expression": false
+        "prefer-conditional-expression": false,
+        "quotemark": [true, "single"]
     }
 }

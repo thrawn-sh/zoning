@@ -1,32 +1,33 @@
-/// <reference path="../node_modules/@types/leaflet/index.d.ts"/>
+/// <reference path='../node_modules/@types/leaflet/index.d.ts'/>
 
 class ZoneInfo {
 
     private static readonly DUMMY: IZone = {
+        bounds: [ [ 47.3024876979, 5.98865807458], [54.983104153, 15.0169958839] ],
         center: [ 51.0948001, 10.2651007 ],
         manager: undefined,
         neighbours: [],
-        place: "",
-        population: "0",
-        postalCode: "",
-        state: "",
+        place: '',
+        population: '0',
+        postalCode: '',
+        state: '',
     };
 
-    private readonly button: HTMLInputElement = document.getElementById("add") as HTMLInputElement;
+    private readonly button: HTMLInputElement = document.getElementById('add') as HTMLInputElement;
 
     private readonly formatter: Intl.NumberFormat;
 
-    private readonly manager: HTMLInputElement = document.getElementById("manager") as HTMLInputElement;
+    private readonly manager: HTMLInputElement = document.getElementById('manager') as HTMLInputElement;
 
-    private readonly place: HTMLInputElement = document.getElementById("place") as HTMLInputElement;
+    private readonly place: HTMLInputElement = document.getElementById('place') as HTMLInputElement;
 
-    private readonly population: HTMLInputElement = document.getElementById("population") as HTMLInputElement;
+    private readonly population: HTMLInputElement = document.getElementById('population') as HTMLInputElement;
 
-    private readonly postalcode: HTMLInputElement = document.getElementById("postalcode") as HTMLInputElement;
+    private readonly postalcode: HTMLInputElement = document.getElementById('postalcode') as HTMLInputElement;
 
     private readonly selections: ZoneSelections;
 
-    private readonly state: HTMLInputElement = document.getElementById("state") as HTMLInputElement;
+    private readonly state: HTMLInputElement = document.getElementById('state') as HTMLInputElement;
 
     private zone: IZone = ZoneInfo.DUMMY;
 
@@ -36,7 +37,7 @@ class ZoneInfo {
     }
 
     public addToSelection(): void {
-        if (this.zone) {
+        if (this.zone.postalCode !== '') {
             this.button.disabled = true;
             this.selections.addZone(this.zone);
         }
@@ -65,8 +66,8 @@ class ZoneInfo {
 
     private renderFields(zone: IZone): void {
         const manager: string | undefined = this.zone.manager;
-        this.button.disabled = (manager || this.selections.has(zone)) as boolean;
-        this.manager.value = (manager) ? manager : "";
+        this.button.disabled = (!!manager) || this.selections.has(zone);
+        this.manager.value = (!!manager) ? manager : '';
         this.place.value = zone.place;
         this.postalcode.value = zone.postalCode;
         this.population.value = this.formatter.format(parseInt(zone.population, 10));
