@@ -35,7 +35,6 @@ class ZoneMap {
                 layer.on('click', (): void => { selectCallback(feature.properties.postalCode); });
             },
             style: (feature: GeoJSON.Feature<GeoJSON.Geometry, IZone> | undefined): L.PathOptions => {
-                console.log('styling')
                 const style: L.PathOptions = {};
                 if (!!feature) {
                     const zone = feature.properties;
@@ -50,7 +49,7 @@ class ZoneMap {
                     }
                 }
                 return style;
-            }
+            },
         });
         this.zoneLayer.bindTooltip((layer: L.Layer): string => {
             const feature: GeoJSON.Feature<GeoJSON.Geometry, IZone> = ((layer as L.GeoJSON<IZone>).feature as GeoJSON.Feature<GeoJSON.Geometry, IZone>); // FIXME
