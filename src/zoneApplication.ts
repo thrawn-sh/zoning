@@ -36,7 +36,7 @@ class ZoneApplication {
 
     public constructor() {
         const formatter: Intl.NumberFormat = new Intl.NumberFormat();
-        this.selections = new ZoneSelections(formatter, (postalCode: string): void => { this.selectPostalCode(postalCode); }, (): void => { this.info.rerender(); this.map.redraw()});
+        this.selections = new ZoneSelections(formatter, (postalCode: string): void => { this.selectPostalCode(postalCode); }, (): void => { this.info.rerender(); this.map.rerender();});
         this.info = new ZoneInfo(formatter, this.selections);
         this.map = new ZoneMap(this.info, this.selections, (postalCode: string): void => {
             this.selectPostalCode(postalCode);

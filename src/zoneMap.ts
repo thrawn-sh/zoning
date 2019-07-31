@@ -60,7 +60,7 @@ class ZoneMap {
         this.selections = selections;
     }
 
-    public redraw(): void {
+    public rerender(): void {
         this.zoneLayer.clearLayers();
         // add all available features again
         for (const feature of this.features.values()) {
