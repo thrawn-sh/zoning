@@ -3,7 +3,7 @@
 
 class ZoneMap {
 
-    private readonly features: Set<string> = new Set();
+    private readonly features: Map<string, GeoJSON.Feature<GeoJSON.Geometry, IZone>> = new Map();
 
     private readonly info: ZoneInfo;
 
@@ -21,18 +21,18 @@ class ZoneMap {
         this.info = info;
         const zone: IZone = ZoneApplication.DUMMY;
         this.map = L.map('map', {
-            center:  L.latLng(zone.center),
+            center: L.latLng(zone.center),
             maxZoom: this.maxZoom,
             minZoom: this.minZoom,
-            zoom:    this.minZoom,
+            zoom: this.minZoom,
         });
         const tileLayer: L.TileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution:  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         });
         this.map.addLayer(tileLayer);
         this.zoneLayer = L.geoJSON(undefined, {
             onEachFeature: (feature: GeoJSON.Feature<GeoJSON.Geometry, IZone>, layer: L.Layer): void => {
-                 layer.on('click', (): void => { selectCallback(feature.properties.postalCode); });
+                layer.on('click', (): void => { selectCallback(feature.properties.postalCode); });
             },
         });
         this.zoneLayer.bindTooltip((layer: L.Layer): string => {
@@ -44,15 +44,11 @@ class ZoneMap {
     }
 
     public redraw(): void {
-        return;
-        // this.zoneLayer.eachLayer((layer: L.Layer): void => {
-        //     if (layer instanceof L.GeoJSON) {
-        //         const feature: GeoJSON.Feature<GeoJSON.Geometry, IZone> = ((layer as L.GeoJSON<IZone>).feature as GeoJSON.Feature<GeoJSON.Geometry, IZone>); // FIXME
-        //         const zone: IZone = feature.properties;
-        //         const style: L.PathOptions = this.calculateStyle(zone);
-        //         layer.setStyle(style);
-        //     }
-        // });
+        this.zoneLayer.clearLayers();
+        // add all available features again
+        for (const feature of this.features.values()) {
+            this.zoneLayer.addData(feature);
+        }
     }
 
     public reset(): void {
@@ -71,6 +67,13 @@ class ZoneMap {
             this.map.panTo(center);
         }
 
+        this.zoneLayer.clearLayers();
+        // add all available features again
+        for (const feature of this.features.values()) {
+            this.zoneLayer.addData(feature);
+        }
+
+        // request and add missing features
         for (const neighbour of zone.properties.neighbours) {
             if (this.features.has(neighbour)) {
                 continue;
@@ -82,24 +85,27 @@ class ZoneMap {
                 if (request.status !== 200) {
                     return;
                 }
-                this.features.add(neighbour);
                 const feature: GeoJSON.Feature<GeoJSON.Geometry, IZone> = JSON.parse(request.responseText) as GeoJSON.Feature<GeoJSON.Geometry, IZone>;
+                this.features.set(neighbour, feature);
                 this.zoneLayer.addData(feature);
             };
             request.send();
         }
     }
 
-    private calculateStyle(zone: IZone): L.PathOptions {
-        const style: L.PathOptions = { };
-        if (!!zone.manager) {
-            style.fillColor = '#de4f06';
-        }
-        if (this.selections.has(zone)) {
-            style.fillColor = '#ffff00';
-        }
-        if (this.info.isSelectedZone(zone)) {
-            style.fillColor = '#8a2be2';
+    private calculateStyle(feature: GeoJSON.Feature<GeoJSON.Geometry, IZone> | undefined): L.PathOptions {
+        const style: L.PathOptions = {};
+        if (feature) {
+            const zone = feature.properties;
+            if (!!zone.manager) {
+                style.fillColor = '#de4f06';
+            }
+            if (this.selections.has(zone)) {
+                style.fillColor = '#ffff00';
+            }
+            if (this.info.isSelectedZone(zone)) {
+                style.fillColor = '#8a2be2';
+            }
         }
         return style;
     }
