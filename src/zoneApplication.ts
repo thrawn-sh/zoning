@@ -13,7 +13,7 @@ class ZoneApplication {
 
     public static readonly DUMMY: IZone = {
         bounds: [ [ 47.30248, 5.98815], [54.98311, 14.98853] ],
-        center: [ 51.09480, 10.26510 ],
+        center: [ 51.0948, 10.2651 ],
         manager: undefined,
         neighbours: [],
         place: '',

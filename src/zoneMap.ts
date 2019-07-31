@@ -13,8 +13,6 @@ class ZoneMap {
 
     private readonly minZoom: number = 6;
 
-    private readonly selectCallback: (postalcode: string) => void;
-
     private readonly selections: ZoneSelections;
 
     private readonly zoneLayer: L.GeoJSON<IZone>;
@@ -32,14 +30,17 @@ class ZoneMap {
             attribution:  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         });
         this.map.addLayer(tileLayer);
-        this.zoneLayer = L.geoJSON();
+        this.zoneLayer = L.geoJSON(undefined, {
+            onEachFeature: (feature: GeoJSON.Feature<GeoJSON.Geometry, IZone>, layer: L.Layer): void => {
+                 layer.on('click', (): void => { selectCallback(feature.properties.postalCode); });
+            },
+        });
         this.zoneLayer.bindTooltip((layer: L.Layer): string => {
             const feature: GeoJSON.Feature<GeoJSON.Geometry, IZone> = ((layer as L.GeoJSON<IZone>).feature as GeoJSON.Feature<GeoJSON.Geometry, IZone>); // FIXME
             return feature.properties.postalCode;
         },                         { sticky: true });
         this.map.addLayer(this.zoneLayer);
         this.selections = selections;
-        this.selectCallback = selectCallback;
     }
 
     public redraw(): void {
@@ -55,7 +56,6 @@ class ZoneMap {
     }
 
     public reset(): void {
-        this.features.clear();
         this.zoneLayer.clearLayers();
         const zone: IZone = this.info.getZone();
         const bounds: L.LatLngBounds = new L.LatLngBounds(zone.bounds);
@@ -71,8 +71,7 @@ class ZoneMap {
             this.map.panTo(center);
         }
 
-            const callback: (postalcode: string) => void = this.selectCallback;
-            for (const neighbour of zone.properties.neighbours) {
+        for (const neighbour of zone.properties.neighbours) {
             if (this.features.has(neighbour)) {
                 continue;
             }
@@ -85,13 +84,7 @@ class ZoneMap {
                 }
                 this.features.add(neighbour);
                 const feature: GeoJSON.Feature<GeoJSON.Geometry, IZone> = JSON.parse(request.responseText) as GeoJSON.Feature<GeoJSON.Geometry, IZone>;
-                const featureZone: IZone = feature.properties;
-                const style: L.PathOptions = this.calculateStyle(featureZone);
-                const layer: L.GeoJSON = this.zoneLayer.addData(feature) as L.GeoJSON;
-                layer.setStyle(style);
-                layer.on('click', (): void => {
-                    callback(featureZone.postalCode);
-                });
+                this.zoneLayer.addData(feature);
             };
             request.send();
         }
