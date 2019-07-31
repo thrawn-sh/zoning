@@ -21,7 +21,7 @@ class ZoneMap {
 
     public constructor(info: ZoneInfo, selections: ZoneSelections, selectCallback: (postalcode: string) => void) {
         this.info = info;
-        const zone: IZone = info.getZone();
+        const zone: IZone = ZoneApplication.DUMMY;
         this.map = L.map('map', {
             center:  L.latLng(zone.center),
             maxZoom: this.maxZoom,

@@ -2,17 +2,6 @@
 
 class ZoneInfo {
 
-    private static readonly DUMMY: IZone = {
-        bounds: [ [ 47.30248, 5.98815], [54.98311, 14.98853] ],
-        center: [ 51.09480, 10.26510 ],
-        manager: undefined,
-        neighbours: [],
-        place: '',
-        population: '0',
-        postalCode: '',
-        state: '',
-    };
-
     private readonly button: HTMLInputElement = document.getElementById('add') as HTMLInputElement;
 
     private readonly formatter: Intl.NumberFormat;
@@ -29,7 +18,7 @@ class ZoneInfo {
 
     private readonly state: HTMLInputElement = document.getElementById('state') as HTMLInputElement;
 
-    private zone: IZone = ZoneInfo.DUMMY;
+    private zone: IZone = ZoneApplication.DUMMY;
 
     public constructor(formatter: Intl.NumberFormat, selections: ZoneSelections) {
         this.formatter = formatter;
@@ -37,7 +26,7 @@ class ZoneInfo {
     }
 
     public addToSelection(): void {
-        if (this.zone.postalCode !== '') {
+        if (this.zone.postalCode !== ZoneApplication.DUMMY.postalCode) {
             this.button.disabled = true;
             this.selections.addZone(this.zone);
         }
@@ -56,7 +45,7 @@ class ZoneInfo {
     }
 
     public reset(): void {
-        this.zone = ZoneInfo.DUMMY;
+        this.zone = ZoneApplication.DUMMY;
         this.renderFields(this.zone);
     }
 
