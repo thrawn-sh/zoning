@@ -107,11 +107,11 @@ function js() { // {{{1
  	]);
  
  	var application   = gulp.src([
- 		'built/Zone.js',
- 		'built/ZoneSelections.js',
- 		'built/ZoneInfo.js',
- 		'built/ZoneMap.js',
- 		'built/ZoneApplication.js',
+ 		//'built/zone.js',
+ 		'built/zoneSelections.js',
+ 		'built/zoneInfo.js',
+ 		'built/zoneMap.js',
+ 		'built/zoneApplication.js',
  	]);
  
  	return streamqueue({ objectMode: true }, libraries, application)
