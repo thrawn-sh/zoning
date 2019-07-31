@@ -152,7 +152,6 @@ function serve() {
     gulp.watch(['src/**/*.html'], html);
     gulp.watch(['src/**/*.scss'], css);
     gulp.watch(['src/**/*.ts'],   ts);
-    gulp.watch(['src/api/**/*'], assets_dev);
 }
 
 const build = gulp.series(clean, gulp.parallel(assets_api, assets_favicons, assets_fonts, assets_images), css, ts, js, html, compress);
