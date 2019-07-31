@@ -62,7 +62,7 @@ class ZoneApplication {
         this.selections.reset();
     }
 
-    public searchPostalCode(): void {
+    public searchPostalCode(fly: boolean = true): void {
         if (this.searching) {
             return;
         }
@@ -75,7 +75,7 @@ class ZoneApplication {
                 if (request.status === 200) {
                     const feature: GeoJSON.Feature<GeoJSON.Geometry, IZone> = JSON.parse(request.responseText) as GeoJSON.Feature<GeoJSON.Geometry, IZone>;
                     this.info.selectZone(feature.properties);
-                    this.map.select(feature);
+                    this.map.select(feature, fly);
                 }
                 this.searching = false;
             };
@@ -85,7 +85,7 @@ class ZoneApplication {
 
     private selectPostalCode(postalCode: string): void {
         this.search.value = postalCode;
-        this.searchPostalCode();
+        this.searchPostalCode(false);
     }
 }
 

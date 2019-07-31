@@ -3,8 +3,8 @@
 class ZoneInfo {
 
     private static readonly DUMMY: IZone = {
-        bounds: [ [ 47.3024876979, 5.98865807458], [54.983104153, 15.0169958839] ],
-        center: [ 51.0948001, 10.2651007 ],
+        bounds: [ [ 47.30248, 5.98815], [54.98311, 14.98853] ],
+        center: [ 51.09480, 10.26510 ],
         manager: undefined,
         neighbours: [],
         place: '',
@@ -41,6 +41,10 @@ class ZoneInfo {
             this.button.disabled = true;
             this.selections.addZone(this.zone);
         }
+    }
+
+    public getZone(): IZone {
+        return this.zone;
     }
 
     public isSelectedZone(zone: IZone): boolean {

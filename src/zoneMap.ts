@@ -5,8 +5,6 @@ class ZoneMap {
 
     private readonly features: Set<string> = new Set();
 
-    private readonly germanyCenter: L.LatLng = L.latLng(51.0948001, 10.2651007);
-
     private readonly info: ZoneInfo;
 
     private readonly map: L.Map;
@@ -23,8 +21,9 @@ class ZoneMap {
 
     public constructor(info: ZoneInfo, selections: ZoneSelections, selectCallback: (postalcode: string) => void) {
         this.info = info;
+        const zone: IZone = info.getZone();
         this.map = L.map('map', {
-            center:  this.germanyCenter,
+            center:  L.latLng(zone.center),
             maxZoom: this.maxZoom,
             minZoom: this.minZoom,
             zoom:    this.minZoom,
@@ -44,33 +43,36 @@ class ZoneMap {
     }
 
     public redraw(): void {
-        this.zoneLayer.eachLayer((layer: L.Layer): void => {
-            if (layer instanceof L.GeoJSON) {
-                const feature: GeoJSON.Feature<GeoJSON.Geometry, IZone> = ((layer as L.GeoJSON<IZone>).feature as GeoJSON.Feature<GeoJSON.Geometry, IZone>); // FIXME
-                const zone: IZone = feature.properties;
-                const style: L.PathOptions = this.calculateStyle(zone);
-                layer.setStyle(style);
-            }
-        });
+        return;
+        // this.zoneLayer.eachLayer((layer: L.Layer): void => {
+        //     if (layer instanceof L.GeoJSON) {
+        //         const feature: GeoJSON.Feature<GeoJSON.Geometry, IZone> = ((layer as L.GeoJSON<IZone>).feature as GeoJSON.Feature<GeoJSON.Geometry, IZone>); // FIXME
+        //         const zone: IZone = feature.properties;
+        //         const style: L.PathOptions = this.calculateStyle(zone);
+        //         layer.setStyle(style);
+        //     }
+        // });
     }
 
     public reset(): void {
         this.features.clear();
         this.zoneLayer.clearLayers();
-        this.map.flyTo(this.germanyCenter, this.minZoom);
+        const zone: IZone = this.info.getZone();
+        const bounds: L.LatLngBounds = new L.LatLngBounds(zone.bounds);
+        this.map.flyToBounds(bounds);
     }
 
-    public select(zone: GeoJSON.Feature<GeoJSON.Geometry, IZone>): void {
-        const center: L.LatLng = L.latLng(zone.properties.center);
-        const mapCenter: L.LatLng = this.map.getCenter();
-        if (mapCenter.equals(this.germanyCenter)) {
-            this.map.flyTo(center, this.maxZoom - 1);
+    public select(zone: GeoJSON.Feature<GeoJSON.Geometry, IZone>, fly: boolean = true): void {
+        if (fly) {
+            const bounds: L.LatLngBounds = new L.LatLngBounds(zone.properties.bounds);
+            this.map.flyToBounds(bounds);
         } else {
+            const center: L.LatLng = L.latLng(zone.properties.center);
             this.map.panTo(center);
         }
 
-        const callback: (postalcode: string) => void = this.selectCallback;
-        for (const neighbour of zone.properties.neighbours) {
+            const callback: (postalcode: string) => void = this.selectCallback;
+            for (const neighbour of zone.properties.neighbours) {
             if (this.features.has(neighbour)) {
                 continue;
             }
@@ -93,7 +95,6 @@ class ZoneMap {
             };
             request.send();
         }
-        this.redraw();
     }
 
     private calculateStyle(zone: IZone): L.PathOptions {
