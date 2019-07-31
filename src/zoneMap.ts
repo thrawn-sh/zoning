@@ -34,6 +34,23 @@ class ZoneMap {
             onEachFeature: (feature: GeoJSON.Feature<GeoJSON.Geometry, IZone>, layer: L.Layer): void => {
                 layer.on('click', (): void => { selectCallback(feature.properties.postalCode); });
             },
+            style: (feature: GeoJSON.Feature<GeoJSON.Geometry, IZone> | undefined): L.PathOptions => {
+                console.log('styling')
+                const style: L.PathOptions = {};
+                if (!!feature) {
+                    const zone = feature.properties;
+                    if (!!zone.manager) {
+                        style.fillColor = '#de4f06';
+                    }
+                    if (selections.has(zone)) {
+                        style.fillColor = '#ffff00';
+                    }
+                    if (info.isSelectedZone(zone)) {
+                        style.fillColor = '#8a2be2';
+                    }
+                }
+                return style;
+            }
         });
         this.zoneLayer.bindTooltip((layer: L.Layer): string => {
             const feature: GeoJSON.Feature<GeoJSON.Geometry, IZone> = ((layer as L.GeoJSON<IZone>).feature as GeoJSON.Feature<GeoJSON.Geometry, IZone>); // FIXME
@@ -91,22 +108,5 @@ class ZoneMap {
             };
             request.send();
         }
-    }
-
-    private calculateStyle(feature: GeoJSON.Feature<GeoJSON.Geometry, IZone> | undefined): L.PathOptions {
-        const style: L.PathOptions = {};
-        if (feature) {
-            const zone = feature.properties;
-            if (!!zone.manager) {
-                style.fillColor = '#de4f06';
-            }
-            if (this.selections.has(zone)) {
-                style.fillColor = '#ffff00';
-            }
-            if (this.info.isSelectedZone(zone)) {
-                style.fillColor = '#8a2be2';
-            }
-        }
-        return style;
     }
 }
