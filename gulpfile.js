@@ -11,7 +11,6 @@ var gulpif      = require('gulp-if');
 var gzip        = require('gulp-gzip');
 var htmlmin     = require('gulp-htmlmin');
 var imagemin    = require('gulp-imagemin');
-var jshint      = require('gulp-jshint');
 var jsonminify  = require('gulp-jsonminify');
 var sass        = require('gulp-sass');
 var sourcemaps  = require('gulp-sourcemaps');
@@ -106,8 +105,9 @@ function js() { // {{{1
         'node_modules/geojson/geojson.js',
  	]);
  
+    // order is important
  	var application   = gulp.src([
- 		//'built/zone.js',
+ 		'built/zone.js',
  		'built/zoneSelections.js',
  		'built/zoneInfo.js',
  		'built/zoneMap.js',
@@ -165,8 +165,7 @@ function serve() {
     gulp.watch(['src/**/*.html'], html);
     gulp.watch(['src/**/*.scss'], css);
     // gulp.watch(['src/**/*.ts'],   ts);
-
-    //gulp.watch(['src/api/**/*'], assets_dev);
+    gulp.watch(['src/api/**/*'], assets_dev);
 }
 
 const build = gulp.series(clean, gulp.parallel(assets_api, assets_favicons, assets_fonts, assets_images), css, js, html, compress);
