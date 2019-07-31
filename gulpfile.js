@@ -15,7 +15,7 @@ var jsonminify  = require('gulp-jsonminify');
 var sass        = require('gulp-sass');
 var sourcemaps  = require('gulp-sourcemaps');
 var streamqueue = require('streamqueue');
-var ts          = require('gulp-typescript');
+var typescript  = require('gulp-typescript');
 var uglify      = require('gulp-uglify');
  
 var argv    = require('yargs').argv;
@@ -125,26 +125,13 @@ function js() { // {{{1
 } // }}}1
 
 function ts() { // {{{1
- 	var libraries     = gulp.src([
- 	]);
- 
- 	var application   = gulp.src([
- 		'src/**/*.ts',
- 	]);
+    var project = typescript.createProject('tsconfig.json');
 
- 	return streamqueue({ objectMode: true }, libraries, application)
+    return project.src()
         .pipe(project())
-        .pipe(chmod(0644))
-        .pipe(gulp.dest('built/'));
-
-    //var project = ts.createProject('tsconfig.json');
- 	//return streamqueue({ objectMode: true }, libraries, application)
- 	//	.pipe(gulpif(!argv.production, sourcemaps.init()))
-    //    .pipe(project())
- 	//	.pipe(gulpif(!argv.production, sourcemaps.write()))
- 	//	.pipe(gulpif(argv.production, cache.resources()))
- 	//	.pipe(chmod(0644))
-    //    .pipe(gulp.dest('built/'));
+        .js
+ 		.pipe(chmod(0644))
+        .pipe(gulp.dest('built'));
 } // }}}1
 
 function serve() {
@@ -164,11 +151,11 @@ function serve() {
     gulp.watch(['built/**/*.js'], js);
     gulp.watch(['src/**/*.html'], html);
     gulp.watch(['src/**/*.scss'], css);
-    // gulp.watch(['src/**/*.ts'],   ts);
+    gulp.watch(['src/**/*.ts'],   ts);
     gulp.watch(['src/api/**/*'], assets_dev);
 }
 
-const build = gulp.series(clean, gulp.parallel(assets_api, assets_favicons, assets_fonts, assets_images), css, js, html, compress);
+const build = gulp.series(clean, gulp.parallel(assets_api, assets_favicons, assets_fonts, assets_images), css, ts, js, html, compress);
 exports.build = build;
 exports.serve = gulp.series(build, serve);
 exports.default = build;
