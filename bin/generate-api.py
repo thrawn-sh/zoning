@@ -10,6 +10,8 @@ import os
 import sys
 import zipfile
 
+RESOLUTION = 5
+
 def calculate_bounds(points):
     north = -(sys.maxsize - 1)
     east  = -(sys.maxsize - 1)
@@ -26,7 +28,7 @@ def calculate_bounds(points):
         if lng < south:
             south = lng
 
-    return ( (south, west), (north, east) )
+    return ( (round(south, RESOLUTION), round(west, RESOLUTION)), (round(north, RESOLUTION), round(east, RESOLUTION)) )
 
 def calculate_center(points):
     north = -(sys.maxsize - 1)
@@ -44,25 +46,33 @@ def calculate_center(points):
         if lng < south:
             south = lng
 
-    return ((east + west) / 2, (north + south) / 2)
+    return (round((east + west) / 2, RESOLUTION), round((north + south) / 2, RESOLUTION))
 
 def sortFeature(feature):
     return feature['id']
 
 def calculate_features(kml, city, state, population, management, neighbours):
     features = { }
+
+    poligons = { }
+    for postal_code in city:
+        poligons[postal_code] = [ ]
+
     for pm in kml.cssselect('Placemark'):
         postal_code = pm.cssselect('name')[0].text_content()
+        poligons[postal_code].append(pm.cssselect('coordinates'))
 
+    for postal_code in poligons:
         all_points = []
         coordinates = []
-        for c in pm.cssselect('coordinates'):
-            points = []
-            for p in c.text_content().split(' '):
-                (x, y) = p.split(',')
-                points.append((float(x), float(y)))
-                all_points.append((float(x), float(y)))
-            coordinates.append(points)
+        for feature_poligons in poligons[postal_code]:
+            for poligon in feature_poligons:
+                points = []
+                for p in poligon.text_content().split(' '):
+                    (lng, lat) = p.split(',')
+                    points.append((round(float(lng), RESOLUTION), round(float(lat), RESOLUTION)))
+                    all_points.append((float(lng), float(lat)))
+                coordinates.append(points)
 
         feature = collections.OrderedDict()
         feature['id']                      = postal_code
@@ -80,6 +90,12 @@ def calculate_features(kml, city, state, population, management, neighbours):
         feature['geometry']                = collections.OrderedDict()
         feature['geometry']['coordinates'] = coordinates
         feature['geometry']['type']        = 'Polygon'
+        if (len(coordinates) > 1):
+            multi = []
+            for c in coordinates:
+                multi.append([c])
+            feature['geometry']['coordinates'] = multi
+            feature['geometry']['type']        = 'MultiPolygon'
 
         features[postal_code] = feature
 
