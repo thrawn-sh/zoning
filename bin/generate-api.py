@@ -28,7 +28,7 @@ def calculate_bounds(points):
         if lng < south:
             south = lng
 
-    return ( (round(south, RESOLUTION), round(west, RESOLUTION)), (round(north, RESOLUTION), round(east, RESOLUTION)) )
+    return ( (round(west, RESOLUTION), round(south, RESOLUTION)), (round(east, RESOLUTION), round(north, RESOLUTION)) )
 
 def calculate_center(points):
     north = -(sys.maxsize - 1)
