@@ -7,6 +7,7 @@ from lxml import html
 import os
 import zipfile
 from shapely.geometry import MultiPoint
+import sys
 
 RESOLUTION = 5
 
@@ -36,6 +37,9 @@ def calculate_neighbours(kml):
     envelopes = calculate_envelopes(kml)
 
     result = { }
+    for current in sorted(envelopes):
+        result[current] = set()
+
     size = len(envelopes)
     count = 0
     for current in sorted(envelopes):
@@ -43,16 +47,24 @@ def calculate_neighbours(kml):
         print("%s: [%d/%d]" % (current, count, size))
         current_polygon = envelopes[current]
         for envelop in envelopes:
-            other_polygon = envelopes[envelop]
-            if current_polygon.intersects(other_polygon):
-                neighbour_set = set()
-                if current in result:
-                    neighbour_set = result[current]
+            if current_polygon.intersects(envelopes[envelop]):
+                result[current].add(envelop)
 
-                neighbour_set.add(envelop)
-                result[current] = neighbour_set
+        # fill holes: zones, that are not direct heighbours, but are totally encosed in the neighbourhood
+        region = calulcate_neighbourhood_envelop(result[current], envelopes)
+        for envelop in envelopes:
+            if envelop in result[current]:
+                continue
+            if region.contains(envelopes[envelop]):
+                result[current].add(envelop)
 
     return result
+
+def calulcate_neighbourhood_envelop(neighbours, envelopes):
+    points = [ ]
+    for neighbour in neighbours:
+        points.extend(list(envelopes[neighbour].exterior.coords))
+    return MultiPoint(points).envelope
 
 def main():
     parser = argparse.ArgumentParser(description="calculate neighbouring information", add_help=True)
