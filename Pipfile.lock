@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "fcfd808b512b963a229282e1346ee364b2adaa009f4682697a4646c565019eb0"
+            "sha256": "f01c8481eea4c755276b879f0cae2ddf3edb38c8c9c52a08f365d9a83723b7d3"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -23,6 +23,13 @@
             ],
             "index": "pypi",
             "version": "==1.0.3"
+        },
+        "geojson-rewind": {
+            "hashes": [
+                "sha256:fd3d97ba487bc39ebaba3d1e9a601e2e3c7d7ddbf3cd1f5cc85915f305887c82"
+            ],
+            "index": "pypi",
+            "version": "==0.1.1"
         },
         "lxml": {
             "hashes": [

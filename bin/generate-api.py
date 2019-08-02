@@ -4,8 +4,9 @@
 import argparse
 import collections
 import csv
-from lxml import html
+from geojson_rewind import rewind
 import json
+from lxml import html
 import os
 import sys
 import zipfile
@@ -97,7 +98,7 @@ def calculate_features(kml, city, state, population, management, neighbours):
             feature['geometry']['coordinates'] = multi
             feature['geometry']['type']        = 'MultiPolygon'
 
-        features[postal_code] = feature
+        features[postal_code] = rewind(feature)
 
     return features
 
