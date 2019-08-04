@@ -4,6 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+argparse = "==1.4.0"
 cssselect = "==1.0.3"
 lxml = "==4.3.4"
 Shapely = "==1.6.4.post2"
