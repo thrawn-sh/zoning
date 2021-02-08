@@ -6,11 +6,11 @@ name = "pypi"
 [packages]
 argparse = "==1.4.0"
 cssselect = "==1.0.3"
-lxml = "==4.3.4"
+lxml = "==4.6.2"
 Shapely = "==1.6.4.post2"
 geojson-rewind = "==0.1.1"
 
 [dev-packages]
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"
